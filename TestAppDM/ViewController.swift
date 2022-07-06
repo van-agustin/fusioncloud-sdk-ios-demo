@@ -36,6 +36,7 @@ class ViewController: UIViewController , WebSocketDelegate{
     
     var saleId:String?
     var poiId: String?
+    var logs: String = ""
     
     func initConfig(){
        //config settings
@@ -49,8 +50,10 @@ class ViewController: UIViewController , WebSocketDelegate{
        certificationCode = "98cf9dfc-0db7-4a92-8b8c-b66d4d2d7169"
         
        //id setting
-       saleId =  "BlackLabelUAT1"
-       poiId =   "BLBPOI01"
+       saleId =  "SALE ID "
+       poiId =   "POI ID"
+        
+
         
     }
     
@@ -61,7 +64,21 @@ class ViewController: UIViewController , WebSocketDelegate{
         socket = WebSocket(request: URLRequest(url: URL(string: self.serverDomain!)!))
         socket.delegate = self
         socket.connect()
-       
+       /** move to UI
+        SSlPinningManager.shared.callAnyApi(urlString: "https://www.cloudposintegration.io", isCertificatePinning: true) { (response) in
+                if response.contains("successful"){
+                    self.isCertPin = true
+                    self.doLogin()
+                }
+            
+        } */
+
+        
+    }
+    
+    @IBOutlet weak var txtLogs: UITextView!
+    
+    @IBAction func btnDoLogin(_ sender: UIButton) {
         SSlPinningManager.shared.callAnyApi(urlString: "https://www.cloudposintegration.io", isCertificatePinning: true) { (response) in
                 if response.contains("successful"){
                     self.isCertPin = true
@@ -69,7 +86,9 @@ class ViewController: UIViewController , WebSocketDelegate{
                 }
             
         }
-
+    }
+    
+    @IBAction func doPayment(_ sender: UIButton) {
         
     }
     
@@ -152,7 +171,7 @@ class ViewController: UIViewController , WebSocketDelegate{
                 dateFormat.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
             
             let messageHeader = MessageHeader()
-                messageHeader.protocolVersion = "3.1"
+                messageHeader.protocolVersion = "3.1-dmg"
                 messageHeader.messageClass = "Service"
                 messageHeader.messageCategory = "Login"
                 messageHeader.messageType = "Request"
@@ -255,7 +274,7 @@ class ViewController: UIViewController , WebSocketDelegate{
         
                 let amountReq = AmountsReq()
                     amountReq.currency = "AUD"
-                    amountReq.requestedAmount = 2000
+                    amountReq.requestedAmount = 5
         
                 let saleItem1 = SaleItem()
                     saleItem1.itemId = 1028903671
@@ -339,6 +358,8 @@ class ViewController: UIViewController , WebSocketDelegate{
                       socket.connect()
     }
     
+    
+    
     func didReceive(event: WebSocketEvent, client: WebSocket) {
            switch event {
            case .connected(let headers):
@@ -348,7 +369,7 @@ class ViewController: UIViewController , WebSocketDelegate{
                isConnected = false
                print("websocket is disconnected: \(reason) with code: \(code)")
            case .text(let string):
-                print("Received text: \(string)")
+                //print("Received text: \(string)")
                
                 parseResponse(str: string)
            case .binary(let data):
@@ -392,13 +413,15 @@ class ViewController: UIViewController , WebSocketDelegate{
     
     func sendMessage<T: Mappable>(message: String, requestBody: T, messageHeader: MessageHeader,securityTrailer: SecurityTrailer, type: String){
         let request = crypto.buildRequest(kek: kekValue!, request: requestBody, header: messageHeader, security: securityTrailer, type: type)
-        print(request)
+        logs.append("\n\nRequest: \(request)")
+        txtLogs.text = logs
         socket.write(data: request.data(using: .utf8)!, completion: {
-            print("write send...")})
+            }
+        )
     }
     
     func parseResponse(str: String){
-        
+        logs.append(contentsOf: "\n\n Response \(str)")
         let saleToPOIResponse = SalePOI(JSONString: str)
         let loginResponse = "\(String(describing: saleToPOIResponse?.salePOIResponse?.loginResponse?.response?.result))"
         
@@ -410,7 +433,10 @@ class ViewController: UIViewController , WebSocketDelegate{
       /** This do the validation */
       try! crypto.validateSecurityTrailer(securityTrailer: (saleToPOIResponse!.salePOIResponse?.securityTrailer)!, kek: kekValue!, raw: str)
         
-      print(saleToPOIResponse?.toJSONString(prettyPrint: true)!)
+      //print(saleToPOIResponse?.toJSONString(prettyPrint: true)!)
+        //logs = "\(logs)\n Response: \(saleToPOIResponse?.toJSONString(prettyPrint: true)!)"
+        //print("logs \(logs)")
+        self.txtLogs.text = logs
         
         if str.contains( "LoginResponse") {
             self.doPayment()

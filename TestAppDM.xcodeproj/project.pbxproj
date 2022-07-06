@@ -10,7 +10,7 @@
 		3FCC7C7EFC4AE8E912FA0F2F /* Pods_TestAppDMTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A58B404E374888F03281A000 /* Pods_TestAppDMTests.framework */; };
 		A552C7450BB97BC62FA47227 /* Pods_TestAppDM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B21635AC3E577D76D4E8E01 /* Pods_TestAppDM.framework */; };
 		D615D671283A11C4004A1772 /* FusionCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; };
-		D615D672283A11C4004A1772 /* FusionCloud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D615D672283A11C4004A1772 /* FusionCloud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D67A87D527CB37040021C094 /* GlobalSign.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87CE27CB37030021C094 /* GlobalSign.cer */; };
 		D67A87D627CB37040021C094 /* datamesh_public.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87CF27CB37030021C094 /* datamesh_public.cer */; };
 		D67A87D727CB37040021C094 /* SSLPinningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D67A87D027CB37030021C094 /* SSLPinningManager.swift */; };
