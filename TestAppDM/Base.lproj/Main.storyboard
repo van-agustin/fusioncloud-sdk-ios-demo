@@ -3,6 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,53 +17,65 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kj2-Dk-FME">
-                                <rect key="frame" x="80" y="662" width="65" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Logon"/>
-                                <connections>
-                                    <action selector="btnDoLogin:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Avp-Q7-Ei7"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qj2-hp-8hg">
-                                <rect key="frame" x="238" y="662" width="102" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Do Payment"/>
-                                <connections>
-                                    <action selector="doPayment:" destination="BYZ-38-t0r" eventType="touchUpInside" id="adz-bU-Rh8"/>
-                                </connections>
-                            </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Zxt-Ci-UMa">
-                                <rect key="frame" x="50" y="65" width="315" height="393"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                <color key="textColor" systemColor="labelColor"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="QHo-VR-Nkw">
+                                <rect key="frame" x="50" y="61" width="315" height="393"/>
+                                <color key="backgroundColor" systemColor="labelColor"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="QHo-VR-Nkw">
-                                <rect key="frame" x="50" y="65" width="315" height="393"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <color key="textColor" systemColor="labelColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="1L3-jC-TGW">
+                                <rect key="frame" x="165" y="516" width="84.5" height="113"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kj2-Dk-FME">
+                                        <rect key="frame" x="0.0" y="0.0" width="84.5" height="31"/>
+                                        <color key="backgroundColor" name="AccentColor"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Login"/>
+                                        <connections>
+                                            <action selector="btnDoLogin:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Avp-Q7-Ei7"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="749" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qj2-hp-8hg">
+                                        <rect key="frame" x="0.0" y="43" width="84.5" height="27"/>
+                                        <color key="backgroundColor" name="AccentColor"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Purchase"/>
+                                        <connections>
+                                            <action selector="btnDoPayment:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Aae-L7-rEw"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B8N-KC-v3r">
+                                        <rect key="frame" x="0.0" y="82" width="84.5" height="31"/>
+                                        <color key="backgroundColor" name="AccentColor"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Logout"/>
+                                        <connections>
+                                            <action selector="btnDoLogout:" destination="BYZ-38-t0r" eventType="touchUpInside" id="B2r-VK-vAG"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Kj2-Dk-FME" firstAttribute="top" secondItem="QHo-VR-Nkw" secondAttribute="bottom" constant="204" id="4Vl-r6-chT"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="QHo-VR-Nkw" secondAttribute="trailing" constant="49" id="LX7-9g-Dcl"/>
-                            <constraint firstItem="Kj2-Dk-FME" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="80" id="RT8-U9-WGs"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Qj2-hp-8hg" secondAttribute="trailing" constant="74" id="Vmt-mJ-hd6"/>
-                            <constraint firstItem="Qj2-hp-8hg" firstAttribute="top" secondItem="QHo-VR-Nkw" secondAttribute="bottom" constant="204" id="fux-Ua-fVa"/>
+                            <constraint firstItem="1L3-jC-TGW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="165" id="RN1-F1-hvd"/>
+                            <constraint firstItem="1L3-jC-TGW" firstAttribute="top" secondItem="QHo-VR-Nkw" secondAttribute="bottom" constant="58" id="fs4-p1-CED"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="QHo-VR-Nkw" secondAttribute="bottom" constant="404" id="kWB-CO-Y32"/>
                             <constraint firstItem="QHo-VR-Nkw" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="21" id="mTf-zl-pKL"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="1L3-jC-TGW" secondAttribute="bottom" constant="233" id="pHk-VJ-xQQ"/>
                             <constraint firstItem="QHo-VR-Nkw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="50" id="w1r-Xi-ZUj"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="1L3-jC-TGW" secondAttribute="trailing" constant="164.5" id="yCb-Uq-E2J"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="btnPaymentBtn" destination="Qj2-hp-8hg" id="DNO-nW-Sl0"/>
                         <outlet property="txtLogs" destination="QHo-VR-Nkw" id="vtO-zu-VzC"/>
                     </connections>
                 </viewController>
@@ -72,6 +85,9 @@
         </scene>
     </scenes>
     <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

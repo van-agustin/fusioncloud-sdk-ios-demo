@@ -61,8 +61,6 @@ public class  SSlPinningManager:NSObject,URLSessionDelegate {
             
             let localCertiData = NSData(contentsOfFile: pathToCertificate)
             if isSecuredServer && remoteCertiData.isEqual(to:localCertiData! as Data)  {
-                print("Certificate   Pinning Completed Successfully")
-                
                 completionHandler(.useCredential, URLCredential.init(trust: serverTrust))
             }else{
                 completionHandler(.cancelAuthenticationChallenge,nil)
@@ -76,7 +74,7 @@ public class  SSlPinningManager:NSObject,URLSessionDelegate {
                 let data:Data = serverPublicKeyData! as Data
                 let serverHashKey = sha256(data: data)
                 if serverHashKey == self.hardcodedPublicKey {
-                    print("public key Pinning Completed Successfully")
+                    //pinning completed successfully...
                     completionHandler(.useCredential, URLCredential.init(trust: serverTrust))
                 }else{
                     completionHandler(.cancelAuthenticationChallenge,nil)
@@ -103,7 +101,6 @@ public class  SSlPinningManager:NSObject,URLSessionDelegate {
             }
             if let data = data {
                 let str = String(decoding: data, as: UTF8.self)
-                print(str)
                 if self.isCertificatePinning {
                     response("ssl Pinning successful with Certificate Pinning")
                 }else{

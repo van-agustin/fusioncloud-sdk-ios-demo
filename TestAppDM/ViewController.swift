@@ -14,7 +14,28 @@ import IDZSwiftCommonCrypto
 import SVProgressHUD
 import FusionCloud
 
-class ViewController: UIViewController , WebSocketDelegate{
+
+
+class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
+    
+   
+    let preferences = UserDefaults.standard
+    let isSuccessfulLogin = "isLogin"
+    
+    /**
+        Use this as data receiver...
+     
+            All response is received here, must do parse response or do your own logic inside
+     */
+    
+    
+    func dataReceive(response: String) {
+        print("\(response)")
+        parseResponse(str: response)
+        timer.invalidate()
+    }
+    
+    var receiverDelegate: FusionCloudDelegate?
     
     var socket: WebSocket!
     var isConnected = false
@@ -38,91 +59,35 @@ class ViewController: UIViewController , WebSocketDelegate{
     var poiId: String?
     var logs: String = ""
     
+    var fusionCloudConfig: FusionCloudConfig?
+    
     func initConfig(){
        //config settings
-       serverDomain = "wss://www.cloudposintegration.io/nexodev"
-       kekValue = "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21"
-       keyIdentifier = "SpecV2TestMACKey"
-       keyVersion = "20191122164326"
-       providerIdentification = "DMG"
-       applicationName = "EnterprisePos"
-       softwareVersion = "1.0.1"
-       certificationCode = "98cf9dfc-0db7-4a92-8b8c-b66d4d2d7169"
         
-       //id setting
-       saleId =  "SALE ID "
-       poiId =   "POI ID"
+        fusionCloudConfig = FusionCloudConfig()
         
-
         
-    }
-    
-  
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        initConfig()
-        socket = WebSocket(request: URLRequest(url: URL(string: self.serverDomain!)!))
-        socket.delegate = self
-        socket.connect()
-       /** move to UI
-        SSlPinningManager.shared.callAnyApi(urlString: "https://www.cloudposintegration.io", isCertificatePinning: true) { (response) in
-                if response.contains("successful"){
-                    self.isCertPin = true
-                    self.doLogin()
-                }
-            
-        } */
-
-        
-    }
-    
-    @IBOutlet weak var txtLogs: UITextView!
-    
-    @IBAction func btnDoLogin(_ sender: UIButton) {
-        SSlPinningManager.shared.callAnyApi(urlString: "https://www.cloudposintegration.io", isCertificatePinning: true) { (response) in
-                if response.contains("successful"){
-                    self.isCertPin = true
-                    self.doLogin()
-                }
-            
-        }
-    }
-    
-    @IBAction func doPayment(_ sender: UIButton) {
-        
-    }
-    
-    var secondsRemaining = 60
-    
-    @objc func updateCounter(){
-        if secondsRemaining > 0 {
-            print("\(secondsRemaining) seconds.")
-            secondsRemaining -= 1
-        } else {
-            timer.invalidate()
-            self.doTransactionStatus(serviceID: currentServiceId!)
-        }
-    }
-    
-    func doTransactionStatus(serviceID: String){
+        fusionCloudConfig!.serverDomain = "wss://www.cloudposintegration.io/nexodev"
+        fusionCloudConfig!.kekValue = "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21"
+        fusionCloudConfig!.keyIdentifier = "SpecV2TestMACKey"
+        fusionCloudConfig!.keyVersion = "20191122164326"
+        fusionCloudConfig!.providerIdentification = "DMG"
+        fusionCloudConfig!.applicationName = "EnterprisePos"
+        fusionCloudConfig!.softwareVersion = "1.0.1"
+        fusionCloudConfig!.certificationCode = "98cf9dfc-0db7-4a92-8b8c-b66d4d2d7169"
+       
+        fusionCloudConfig?.saleId =  "SALE ID"
+        fusionCloudConfig?.poiId =   "POI ID"
         
         let messageHeader = MessageHeader()
-            messageHeader.protocolVersion = "3.1"
+            messageHeader.protocolVersion = "3.1-dmg"
             messageHeader.messageClass = "Service"
-            messageHeader.messageCategory = "TransactionStatus"
             messageHeader.messageType = "Request"
-            messageHeader.serviceId = currentServiceId
-            messageHeader.saleId = saleId
-            messageHeader.poiId = poiId
+            messageHeader.saleId = fusionCloudConfig!.saleId
+            messageHeader.poiId = fusionCloudConfig!.poiId
         
-        let transactionStatusRequest = TransactionStatusRequest()
-        let messageReference = MessageReference()
-            messageReference.serviceId = serviceID
-            messageReference.saleID = saleId
-            messageReference.poiId = poiId
-            messageReference.messageCategory = "TransactionStatus"
+        fusionCloudConfig?.messageHeader = messageHeader
         
-        transactionStatusRequest.messageRef = messageReference
         let securityTrailer = SecurityTrailer()
             securityTrailer.contentType = "id-ct-authData"
             
@@ -134,8 +99,8 @@ class ViewController: UIViewController , WebSocketDelegate{
                             
                             //inside kek
                             let kekIdentifier = KEKIdentifier()
-                                kekIdentifier.keyIdentifier = keyIdentifier
-                                kekIdentifier.keyVersion = keyVersion
+                                kekIdentifier.keyIdentifier = fusionCloudConfig!.keyIdentifier
+                                kekIdentifier.keyVersion = fusionCloudConfig!.keyVersion
                             
                             let keyEncryptionAlgorithm = KeyEncryptionAlgorithm()
                                 keyEncryptionAlgorithm.algorithm = "des-ede3-cbc"
@@ -159,7 +124,79 @@ class ViewController: UIViewController , WebSocketDelegate{
             authenticatedData.recipient = recipient
         
         securityTrailer.authenticationData = authenticatedData
-        sendMessage(message: "", requestBody: transactionStatusRequest, messageHeader: messageHeader, securityTrailer: securityTrailer, type: "TransactionStatusRequest")
+        
+        fusionCloudConfig?.securityTrailer = securityTrailer
+        
+    }
+    
+  
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        initConfig()
+        socket = WebSocket(request: URLRequest(url: URL(string: fusionCloudConfig!.serverDomain!)!))
+        socket.delegate = self
+        socket.connect()
+        self.receiverDelegate = self
+        
+        
+    }
+    
+    
+    
+    @IBOutlet weak var txtLogs: UITextView!
+    
+    @IBAction func btnDoLogin(_ sender: UIButton) {
+        SSlPinningManager.shared.callAnyApi(urlString: "https://www.cloudposintegration.io", isCertificatePinning: true) { (response) in
+                if response.contains("successful"){
+                    self.isCertPin = true
+                    self.doLogin()
+                }
+            
+        }
+    }
+    @IBAction func btnDoLogout(_ sender: Any) {
+        //optimise login & payment before initiate
+        doLogout()
+        preferences.set(false, forKey: isSuccessfulLogin)
+        btnPaymentBtn.isEnabled = false
+        print("Logout")
+    }
+    
+    @IBAction func btnDoPayment(_ sender: UIButton) {
+        if self.preferences.bool(forKey: isSuccessfulLogin) == true {
+            self.doPayment()
+        }else{
+            print("do login first...")
+        }
+    }
+    
+    var secondsRemaining = 90 //90 seconds as per documentation
+    
+    @objc func updateCounter(){
+        if secondsRemaining > 0 {
+            print("\(secondsRemaining) seconds.")
+            secondsRemaining -= 1
+        } else {
+            timer.invalidate()
+            self.doTransactionStatus(serviceID: currentServiceId!)
+        }
+    }
+    
+    func doTransactionStatus(serviceID: String){
+        
+        fusionCloudConfig!.messageHeader?.messageCategory = "TransactionStatus"
+        fusionCloudConfig!.messageHeader?.serviceId = currentServiceId
+        
+        
+        let transactionStatusRequest = TransactionStatusRequest()
+        let messageReference = MessageReference()
+            messageReference.serviceId = serviceID
+            messageReference.saleID = saleId
+            messageReference.poiId = poiId
+            messageReference.messageCategory = "TransactionStatus"
+        transactionStatusRequest.messageRef = messageReference
+        
+        sendMessage(message: "", requestBody: transactionStatusRequest, messageHeader: fusionCloudConfig!.messageHeader!, securityTrailer: fusionCloudConfig!.securityTrailer!, type: "TransactionStatusRequest")
     }
     
     func doLogin(){
@@ -170,14 +207,8 @@ class ViewController: UIViewController , WebSocketDelegate{
             let dateFormat = DateFormatter()
                 dateFormat.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
             
-            let messageHeader = MessageHeader()
-                messageHeader.protocolVersion = "3.1-dmg"
-                messageHeader.messageClass = "Service"
-                messageHeader.messageCategory = "Login"
-                messageHeader.messageType = "Request"
-                messageHeader.serviceId = serviceId
-                messageHeader.saleId = saleId
-                messageHeader.poiId = poiId
+            fusionCloudConfig!.messageHeader?.serviceId = serviceId
+            fusionCloudConfig!.messageHeader?.messageCategory = "Login"
                 
             let loginRequest = LoginRequest()
                 loginRequest.dateTime = dateFormat.string(from: Date())
@@ -185,10 +216,10 @@ class ViewController: UIViewController , WebSocketDelegate{
                 loginRequest.operatorLanguage = "en"
             
                 let saleSoftware = SaleSoftware()
-                    saleSoftware.providerIdentification = providerIdentification
-                    saleSoftware.ApplicationName = applicationName
-                    saleSoftware.softwareVersion = softwareVersion
-                    saleSoftware.certificationCode = certificationCode
+                    saleSoftware.providerIdentification = fusionCloudConfig!.providerIdentification
+                    saleSoftware.ApplicationName = fusionCloudConfig!.applicationName
+                    saleSoftware.softwareVersion = fusionCloudConfig!.softwareVersion
+                    saleSoftware.certificationCode = fusionCloudConfig!.certificationCode
                 
                 let saleTerminalData = SaleTerminalData()
                     saleTerminalData.terminalEnvironment = "Attended"
@@ -197,50 +228,46 @@ class ViewController: UIViewController , WebSocketDelegate{
             loginRequest.saleTerminalData = saleTerminalData
             loginRequest.saleSoftware = saleSoftware
             
-            let securityTrailer = SecurityTrailer()
-                securityTrailer.contentType = "id-ct-authData"
-                
-                let authenticatedData = AuthenticationData()
-                    authenticatedData.version = "v0"
-                    let recipient = Recipient()
-                        let KEK = KEK()
-                            KEK.version = "v4"
-                                
-                                //inside kek
-                                let kekIdentifier = KEKIdentifier()
-                                    kekIdentifier.keyIdentifier = keyIdentifier
-                                    kekIdentifier.keyVersion = keyVersion
-                                
-                                let keyEncryptionAlgorithm = KeyEncryptionAlgorithm()
-                                    keyEncryptionAlgorithm.algorithm = "des-ede3-cbc"
-                
-                            KEK.kekIdentifier = kekIdentifier
-                            KEK.kekAlgorithm = keyEncryptionAlgorithm
-                            KEK.encryptedKey = ""//encryptedString
-                            
-                        //inside receipient
-                        let macAlgorithm = MACAlgorithm()
-                            macAlgorithm.algorithm = "id-retail-cbc-mac-sha-256"
-                        
-                        let encapsulatedContent = EncapsulatedContent()
-                            encapsulatedContent.contentType = "id-data"
-                
-                    recipient.kek = KEK
-                    recipient.macAlgorithm = macAlgorithm
-                    recipient.encapContent = encapsulatedContent
-                    recipient.mac = ""//MAC
-                
-                authenticatedData.recipient = recipient
+            timeoutStart()
             
-            securityTrailer.authenticationData = authenticatedData
-            
-            sendMessage(message: "", requestBody: loginRequest, messageHeader: messageHeader, securityTrailer: securityTrailer, type: "LoginRequest")
+            sendMessage(message: "", requestBody: loginRequest, messageHeader: fusionCloudConfig!.messageHeader!, securityTrailer: fusionCloudConfig!.securityTrailer!, type: "LoginRequest")
         } else {
             print("pinning required")
         }
     }
     
+    func doLogout(){
+        let serviceId = crypto.randomString(length: 10)
+        fusionCloudConfig!.messageHeader?.messageCategory = "Logout"
+        fusionCloudConfig!.messageHeader?.serviceId = serviceId
+        
+        let logoutRequest = LogoutRequest()
+        logoutRequest.maintenanceAllowed = true
+        
+        sendMessage(message: "", requestBody: logoutRequest, messageHeader: fusionCloudConfig!.messageHeader!, securityTrailer: fusionCloudConfig!.securityTrailer!, type: "LogoutRequest")
+    }
+    
     var currentServiceId:String?
+    
+    func doAbort(){
+        fusionCloudConfig!.messageHeader?.messageCategory = "Abort"
+        fusionCloudConfig!.messageHeader?.serviceId = currentServiceId
+        
+        let abortRequest = AbortRequest()
+        let messageReference = MessageReference()
+        
+            messageReference.messageCategory = "Payment"
+            messageReference.serviceId = currentServiceId
+            messageReference.saleID = fusionCloudConfig!.saleId
+            messageReference.poiId = fusionCloudConfig!.poiId
+        
+        abortRequest.messageReference = messageReference
+        abortRequest.abortReason = "transaction Cancel"
+        
+        timeoutStart()
+        sendMessage(message: "", requestBody: abortRequest, messageHeader: fusionCloudConfig!.messageHeader!, securityTrailer: fusionCloudConfig!.securityTrailer!, type: "AbortRequest")
+        
+    }
     
     func doPayment(){
         
@@ -249,14 +276,8 @@ class ViewController: UIViewController , WebSocketDelegate{
         let dateFormat = DateFormatter()
             dateFormat.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
         
-        let messageHeader = MessageHeader()
-            messageHeader.protocolVersion = "3.1"
-            messageHeader.messageClass = "Service"
-            messageHeader.messageCategory = "Payment"
-            messageHeader.messageType = "Request"
-            messageHeader.serviceId = serviceId
-            messageHeader.saleId = saleId
-            messageHeader.poiId = poiId
+        fusionCloudConfig!.messageHeader?.serviceId = serviceId
+        fusionCloudConfig!.messageHeader?.messageCategory = "Payment"
         
         
         let paymentRequest = PaymentRequest()
@@ -294,60 +315,17 @@ class ViewController: UIViewController , WebSocketDelegate{
         paymentRequest.paymentTrans = paymentTransaction
         paymentRequest.paymentData  = paymentData
         
-        let securityTrailer = SecurityTrailer()
-            securityTrailer.contentType = "id-ct-authData"
-            
-            let authenticatedData = AuthenticationData()
-                authenticatedData.version = "v0"
-                let recipient = Recipient()
-                    let KEK = KEK()
-                        KEK.version = "v4"
-                            
-                            //inside kek
-                            let kekIdentifier = KEKIdentifier()
-                                kekIdentifier.keyIdentifier = keyIdentifier
-                                kekIdentifier.keyVersion = keyVersion
-                            
-                            let keyEncryptionAlgorithm = KeyEncryptionAlgorithm()
-                                keyEncryptionAlgorithm.algorithm = "des-ede3-cbc"
-            
-                        KEK.kekIdentifier = kekIdentifier
-                        KEK.kekAlgorithm = keyEncryptionAlgorithm
-                        KEK.encryptedKey = ""//encryptedString
-                        
-                    //inside receipient
-                    let macAlgorithm = MACAlgorithm()
-                        macAlgorithm.algorithm = "id-retail-cbc-mac-sha-256"
-                    
-                    let encapsulatedContent = EncapsulatedContent()
-                        encapsulatedContent.contentType = "id-data"
-            
-                recipient.kek = KEK
-                recipient.macAlgorithm = macAlgorithm
-                recipient.encapContent = encapsulatedContent
-                recipient.mac = ""//MAC
-            
-            authenticatedData.recipient = recipient
         
-        securityTrailer.authenticationData = authenticatedData
-        
-        sendMessage(message: "", requestBody: paymentRequest, messageHeader: messageHeader, securityTrailer: securityTrailer, type: "PaymentRequest")
-        
-        //set timer 60 seconds
+        sendMessage(message: "", requestBody: paymentRequest, messageHeader: fusionCloudConfig!.messageHeader!, securityTrailer: fusionCloudConfig!.securityTrailer!, type: "PaymentRequest")
+        timeoutStart()
+    }
+    
+    /** Do call after sending message to Socket*/
+    func timeoutStart(){
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
     }
     
     var timer = Timer()
-
-    @IBAction func btnLogin(_ sender: Any) {
-        
-    }
-    
-    @IBAction func btnDoSale(_ sender: Any) {
-        
-        
-    }
-    
     
     /** WebSocket Delegate functions */
     func startSocketConnection(){
@@ -364,30 +342,26 @@ class ViewController: UIViewController , WebSocketDelegate{
            switch event {
            case .connected(let headers):
                isConnected = true
-               print("websocket is connected: \(headers)")
            case .disconnected(let reason, let code):
+               doAbort()
                isConnected = false
-               print("websocket is disconnected: \(reason) with code: \(code)")
            case .text(let string):
-                //print("Received text: \(string)")
-               
-                parseResponse(str: string)
+               receiverDelegate?.dataReceive(response: string)
            case .binary(let data):
-               print("Received data: \(data.count)")
+               break
            case .ping(_):
-               print("ping")
                break
            case .pong(_):
-               print("it pong")
                break
            case .viabilityChanged(_):
                break
            case .reconnectSuggested(_):
                break
            case .cancelled:
-               print("it cancelled!")
+               doAbort()
                isConnected = false
            case .error(let error):
+               doAbort()
                isConnected = false
                handleError(error)
            }
@@ -412,7 +386,9 @@ class ViewController: UIViewController , WebSocketDelegate{
        }
     
     func sendMessage<T: Mappable>(message: String, requestBody: T, messageHeader: MessageHeader,securityTrailer: SecurityTrailer, type: String){
-        let request = crypto.buildRequest(kek: kekValue!, request: requestBody, header: messageHeader, security: securityTrailer, type: type)
+        
+        print(fusionCloudConfig!.kekValue!)
+        let request = crypto.buildRequest(kek: fusionCloudConfig!.kekValue!, request: requestBody, header: messageHeader, security: securityTrailer, type: type)
         logs.append("\n\nRequest: \(request)")
         txtLogs.text = logs
         socket.write(data: request.data(using: .utf8)!, completion: {
@@ -420,27 +396,27 @@ class ViewController: UIViewController , WebSocketDelegate{
         )
     }
     
+    @IBOutlet weak var btnPaymentBtn: UIButton!
+    
     func parseResponse(str: String){
         logs.append(contentsOf: "\n\n Response \(str)")
         let saleToPOIResponse = SalePOI(JSONString: str)
         let loginResponse = "\(String(describing: saleToPOIResponse?.salePOIResponse?.loginResponse?.response?.result))"
         
-        print("Header Protocol: \(String(describing: saleToPOIResponse?.salePOIResponse?.messageheader?.protocolVersion))")
-        print("Response : \(String(describing: saleToPOIResponse?.salePOIResponse?.loginResponse?.response?.result))")
-        
-        print("printObject => \(saleToPOIResponse?.toJSONString(prettyPrint: true))")
-        
       /** This do the validation */
-      try! crypto.validateSecurityTrailer(securityTrailer: (saleToPOIResponse!.salePOIResponse?.securityTrailer)!, kek: kekValue!, raw: str)
-        
-      //print(saleToPOIResponse?.toJSONString(prettyPrint: true)!)
-        //logs = "\(logs)\n Response: \(saleToPOIResponse?.toJSONString(prettyPrint: true)!)"
-        //print("logs \(logs)")
+      try! crypto.validateSecurityTrailer(securityTrailer: (saleToPOIResponse!.salePOIResponse?.securityTrailer)!, kek: fusionCloudConfig!.kekValue!, raw: str)
         self.txtLogs.text = logs
-        
         if str.contains( "LoginResponse") {
-            self.doPayment()
+            if  saleToPOIResponse?.salePOIResponse?.loginResponse?.response?.result! == "Success"{
+                self.btnPaymentBtn.isEnabled = true
+                self.preferences.set(true, forKey: isSuccessfulLogin)
+            }else{
+                self.btnPaymentBtn.isEnabled = false
+                logs.append(contentsOf: "Error Login...")
+            }
         }
+       
+        
     }
 }
 
