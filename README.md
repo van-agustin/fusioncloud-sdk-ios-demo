@@ -30,6 +30,14 @@ KEKConfig
 
 SalesSystemConfig (static sale system settings - provided by DataMesh)
 
+- providerIdentification
+
+- application Name
+
+- softwareVersion
+
+- certificationCode
+
 - <!--@START_MENU_TOKEN@-->value (KEK provided by DataMesh)<!--@END_MENU_TOKEN@-->
 
 - <!--@START_MENU_TOKEN@-->keyIdentifier (SpecV2TestMACKey or SpecV2ProdMACKey)<!--@END_MENU_TOKEN@-->

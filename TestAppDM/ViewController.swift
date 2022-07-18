@@ -32,7 +32,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     func dataReceive(response: String) {
         print("\(response)")
         parseResponse(str: response)
+        resetTimer()
+    }
+    
+    func resetTimer(){
         timer.invalidate()
+        secondsRemaining = 90 //reset the timer to 90 again
     }
     
     var receiverDelegate: FusionCloudDelegate?
@@ -71,9 +76,11 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         fusionCloudConfig!.kekValue = "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21"
         fusionCloudConfig!.keyIdentifier = "SpecV2TestMACKey"
         fusionCloudConfig!.keyVersion = "20191122164326"
-        fusionCloudConfig!.providerIdentification = "DMG"
-        fusionCloudConfig!.applicationName = "EnterprisePos"
-        fusionCloudConfig!.softwareVersion = "1.0.1"
+        
+        fusionCloudConfig!.providerIdentification = "Company"
+        fusionCloudConfig!.applicationName = "POS Retailer"
+        fusionCloudConfig!.softwareVersion = "01.00.00"
+        
         fusionCloudConfig!.certificationCode = "98cf9dfc-0db7-4a92-8b8c-b66d4d2d7169"
        
         fusionCloudConfig?.saleId =  "SALE ID"
@@ -146,13 +153,15 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     @IBOutlet weak var txtLogs: UITextView!
     
     @IBAction func btnDoLogin(_ sender: UIButton) {
-        SSlPinningManager.shared.callAnyApi(urlString: "https://www.cloudposintegration.io", isCertificatePinning: true) { (response) in
-                if response.contains("successful"){
-                    self.isCertPin = true
-                    self.doLogin()
+        
+            SSlPinningManager.shared.callAnyApi(urlString: "https://www.cloudposintegration.io", isCertificatePinning: true) { (response) in
+                DispatchQueue.main.async {
+                    if response.contains("successful"){
+                        self.isCertPin = true
+                        self.doLogin()
+                    }
                 }
-            
-        }
+            }
     }
     @IBAction func btnDoLogout(_ sender: Any) {
         //optimise login & payment before initiate
@@ -177,7 +186,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             print("\(secondsRemaining) seconds.")
             secondsRemaining -= 1
         } else {
-            timer.invalidate()
+            resetTimer()
             self.doTransactionStatus(serviceID: currentServiceId!)
         }
     }
@@ -401,10 +410,8 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     func parseResponse(str: String){
         logs.append(contentsOf: "\n\n Response \(str)")
         let saleToPOIResponse = SalePOI(JSONString: str)
-        let loginResponse = "\(String(describing: saleToPOIResponse?.salePOIResponse?.loginResponse?.response?.result))"
-        
       /** This do the validation */
-      try! crypto.validateSecurityTrailer(securityTrailer: (saleToPOIResponse!.salePOIResponse?.securityTrailer)!, kek: fusionCloudConfig!.kekValue!, raw: str)
+        try! crypto.validateSecurityTrailer(securityTrailer: (saleToPOIResponse!.salePOIResponse?.securityTrailer ?? saleToPOIResponse!.salePOIRequest?.securityTrailer)!, kek: fusionCloudConfig!.kekValue!, raw: str)
         self.txtLogs.text = logs
         if str.contains( "LoginResponse") {
             if  saleToPOIResponse?.salePOIResponse?.loginResponse?.response?.result! == "Success"{
