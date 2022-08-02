@@ -285,6 +285,7 @@
 				TargetAttributes = {
 					D6A6988A27CA91F900324851 = {
 						CreatedOnToolsVersion = 13.2.1;
+						LastSwiftMigration = 1340;
 					};
 					D6A698A327CA91FA00324851 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -660,7 +661,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dmtest.TestAppDMUpdate2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -694,7 +695,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dmtest.TestAppDMUpdate2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

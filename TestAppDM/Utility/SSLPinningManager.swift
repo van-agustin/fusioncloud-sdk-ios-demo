@@ -10,7 +10,7 @@ import Foundation
 import Security
 import CommonCrypto
 
-public class  SSlPinningManager:NSObject,URLSessionDelegate {
+public class  SSlPinningManager: NSObject, URLSessionDelegate {
     
     public static let shared = SSlPinningManager()
     var isCertificatePinning:Bool = false
@@ -55,7 +55,7 @@ public class  SSlPinningManager:NSObject,URLSessionDelegate {
             let remoteCertiData:NSData  = SecCertificateCopyData(certificate!)
             
             
-            guard let pathToCertificate = Bundle.main.path(forResource: "USERTrust RSA Certification Authority", ofType: "cer") else{
+            guard let pathToCertificate = Bundle.main.path(forResource: "USERTrust RSA Certification Authority", ofType: "cer") else {
                 fatalError("no local path found")
             }
             
@@ -63,9 +63,9 @@ public class  SSlPinningManager:NSObject,URLSessionDelegate {
             if isSecuredServer && remoteCertiData.isEqual(to:localCertiData! as Data)  {
                 completionHandler(.useCredential, URLCredential.init(trust: serverTrust))
             }else{
-                completionHandler(.cancelAuthenticationChallenge,nil)
+                completionHandler(.cancelAuthenticationChallenge, nil)
             }
-        }else{
+        } else {
             //compare Keys
             if let certificate =  SecTrustGetCertificateAtIndex(serverTrust, 2) {
                 
