@@ -6,49 +6,36 @@ This app demonstrates how to send login, payment and transaction status requests
 
 ## Getting Started
 
-#### Configuration
+### First-time setup
 
-Use cocoapods to download repositories.
+* Ensure [cocoapods](https://guides.cocoapods.org/using/getting-started.html) is installed
+* Navigate to project diretory and run `pod install` to install pods
 
-#### Configuration
+### Settings
 
 FusionClientConfig
 
-- <!--@START_MENU_TOKEN@-->certificateLocation (root CA location e.g., 'src/main/resources/root.crt')<!--@END_MENU_TOKEN@-->
+* certificateLocation (root CA location e.g., 'src/main/resources/root.crt')<!--@END_MENU_TOKEN@-->
 
-- <!--@START_MENU_TOKEN@-->serverDomain (domain/server URI)<!--@END_MENU_TOKEN@-->
+POS settings (static settings provided by DataMesh)
 
-- <!--@START_MENU_TOKEN@-->socketProtocol (defaults to 'TLSv1.2' if not provided)<!--@END_MENU_TOKEN@-->
+* providerIdentification
+* application Name
+* softwareVersion
+* certificationCode
 
-KEKConfig
+Sale system settings (different for each instance)
 
-- <!--@START_MENU_TOKEN@-->value (KEK provided by DataMesh)<!--@END_MENU_TOKEN@-->
+* kekValue (KEK provided by DataMesh)
+* saleID
+* poiID
 
-- <!--@START_MENU_TOKEN@-->keyIdentifier (SpecV2TestMACKey or SpecV2ProdMACKey)<!--@END_MENU_TOKEN@-->
-
-- <!--@START_MENU_TOKEN@-->keyVersion (version)<!--@END_MENU_TOKEN@-->
-
-SalesSystemConfig (static sale system settings - provided by DataMesh)
-
-- providerIdentification
-
-- application Name
-
-- softwareVersion
-
-- certificationCode
-
-- <!--@START_MENU_TOKEN@-->value (KEK provided by DataMesh)<!--@END_MENU_TOKEN@-->
-
-- <!--@START_MENU_TOKEN@-->keyIdentifier (SpecV2TestMACKey or SpecV2ProdMACKey)<!--@END_MENU_TOKEN@-->
-
-- <!--@START_MENU_TOKEN@-->keyVersion (version)<!--@END_MENU_TOKEN@-->
 
 ## Dependencies
 
 This project uses the following dependencies
 
-- [FusionCloud Framework](https://fusioncloud.framework)- contains all the models necessary to create request and response messages to the Fusion websocket server
+- [FusionCloud](https://github.com/datameshgroup/fusioncloud-sdk-ios)- contains all the models necessary to create request and response messages to the Fusion websocket server
 
 
 ## Usage
