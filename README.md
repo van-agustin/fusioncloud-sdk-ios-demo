@@ -1,4 +1,4 @@
-# fusioncloud-sdk-ios-demo
+# ``fusionCloud-framework-ios-demoapp``
 
 ## Overview
 
@@ -29,6 +29,14 @@ KEKConfig
 - <!--@START_MENU_TOKEN@-->keyVersion (version)<!--@END_MENU_TOKEN@-->
 
 SalesSystemConfig (static sale system settings - provided by DataMesh)
+
+- providerIdentification
+
+- application Name
+
+- softwareVersion
+
+- certificationCode
 
 - <!--@START_MENU_TOKEN@-->value (KEK provided by DataMesh)<!--@END_MENU_TOKEN@-->
 
