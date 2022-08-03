@@ -1,6 +1,0 @@
-framework module Pods_TestAppDMTests {
-  umbrella header "Pods-TestAppDMTests-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -8,8 +8,8 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 5.3.0)
-  - IDZSwiftCommonCrypto (~> 0.10)
-  - ObjectMapper (~> 4.2)
+  - IDZSwiftCommonCrypto (~> 0.13)
+  - ObjectMapper (~> 4)
   - ReachabilitySwift
   - Starscream (~> 4.0.0)
   - SVProgressHUD
@@ -31,6 +31,6 @@ SPEC CHECKSUMS:
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
-PODFILE CHECKSUM: 114ba44173819ba774f24adc0fc7d3e386e8cf28
+PODFILE CHECKSUM: db4a1e4f15c44914b1e9ca954e6b6502df2b57e3
 
 COCOAPODS: 1.11.3
