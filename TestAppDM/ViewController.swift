@@ -152,7 +152,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         socket = WebSocket(request: URLRequest(url: URL(string: fusionCloudConfig!.serverDomain!)!))
         socket.delegate = self
         socket.connect()
-        self.receiverDelegate = self
+        self.receiverDelegate = self 
         
         btnAbort.isHidden=true
         imgLoading.isHidden=true;
