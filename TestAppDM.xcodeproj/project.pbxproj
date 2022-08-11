@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A552C7450BB97BC62FA47227 /* Pods_TestAppDM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B21635AC3E577D76D4E8E01 /* Pods_TestAppDM.framework */; };
+		AB8B828528A21E8300982344 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989227CA91F900324851 /* ViewController.swift */; };
 		D615D671283A11C4004A1772 /* FusionCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; };
 		D615D672283A11C4004A1772 /* FusionCloud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D67A87D527CB37040021C094 /* GlobalSign.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87CE27CB37030021C094 /* GlobalSign.cer */; };
@@ -16,7 +17,6 @@
 		D67A87DA27CB37040021C094 /* USERTrust RSA Certification Authority.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87D327CB37040021C094 /* USERTrust RSA Certification Authority.cer */; };
 		D6A6988F27CA91F900324851 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6988E27CA91F900324851 /* AppDelegate.swift */; };
 		D6A6989127CA91F900324851 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989027CA91F900324851 /* SceneDelegate.swift */; };
-		D6A6989327CA91F900324851 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989227CA91F900324851 /* ViewController.swift */; };
 		D6A6989627CA91F900324851 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6A6989427CA91F900324851 /* Main.storyboard */; };
 		D6A6989927CA91F900324851 /* TestAppDM.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989727CA91F900324851 /* TestAppDM.xcdatamodeld */; };
 		D6A6989B27CA91F900324851 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6A6989A27CA91F900324851 /* Assets.xcassets */; };
@@ -375,8 +375,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB8B828528A21E8300982344 /* ViewController.swift in Sources */,
 				D6A6989927CA91F900324851 /* TestAppDM.xcdatamodeld in Sources */,
-				D6A6989327CA91F900324851 /* ViewController.swift in Sources */,
 				D67A87D727CB37040021C094 /* SSLPinningManager.swift in Sources */,
 				D6A6988F27CA91F900324851 /* AppDelegate.swift in Sources */,
 				D6A6989127CA91F900324851 /* SceneDelegate.swift in Sources */,
