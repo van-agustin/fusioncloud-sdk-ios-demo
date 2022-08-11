@@ -132,8 +132,8 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             applicationName: "POS Retail",
             softwareVersion: "01.00.00",
             certificationCode: "98cf9dfc-0db7-4a92-8b8cb66d4d2d7169",
-            saleID: "VA POS",
-            poiID: "DMGVA001",
+            saleID: "<<SaleID>>",
+            poiID: "<<POIID>>",
             kekValue: "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21")
     }
     
