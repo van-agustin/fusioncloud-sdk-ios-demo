@@ -1,0 +1,11 @@
+framework module FusionCloud {
+  umbrella header "FusionCloud.h"
+
+  export *
+  module * { export * }
+}
+
+module FusionCloud.Swift {
+    header "FusionCloud-Swift.h"
+    requires objc
+}

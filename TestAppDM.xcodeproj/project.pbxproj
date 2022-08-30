@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A552C7450BB97BC62FA47227 /* Pods_TestAppDM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B21635AC3E577D76D4E8E01 /* Pods_TestAppDM.framework */; };
+		AB49909528A5FF4A00BA4F59 /* FusionCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB49909428A5FF4A00BA4F59 /* FusionCloud.framework */; };
+		AB49909628A5FF4A00BA4F59 /* FusionCloud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AB49909428A5FF4A00BA4F59 /* FusionCloud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AB8B828528A21E8300982344 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989227CA91F900324851 /* ViewController.swift */; };
-		D615D671283A11C4004A1772 /* FusionCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; };
-		D615D672283A11C4004A1772 /* FusionCloud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BD8275CE22FFF1A9EA188FE4 /* Pods_TestAppDM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 293CEAEF73F4F0A38B47777F /* Pods_TestAppDM.framework */; };
 		D67A87D727CB37040021C094 /* SSLPinningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D67A87D027CB37030021C094 /* SSLPinningManager.swift */; };
 		D67A87DA27CB37040021C094 /* devcert.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87D327CB37040021C094 /* devcert.cer */; };
 		D6A6988F27CA91F900324851 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6988E27CA91F900324851 /* AppDelegate.swift */; };
@@ -48,7 +48,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				D615D672283A11C4004A1772 /* FusionCloud.framework in Embed Frameworks */,
+				AB49909628A5FF4A00BA4F59 /* FusionCloud.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -56,13 +56,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1B21635AC3E577D76D4E8E01 /* Pods_TestAppDM.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestAppDM.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		58EE9A92193D0C9530B9B523 /* Pods-TestAppDM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppDM.release.xcconfig"; path = "Target Support Files/Pods-TestAppDM/Pods-TestAppDM.release.xcconfig"; sourceTree = "<group>"; };
-		B964CD207CB90F12FD42882A /* Pods-TestAppDM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppDM.debug.xcconfig"; path = "Target Support Files/Pods-TestAppDM/Pods-TestAppDM.debug.xcconfig"; sourceTree = "<group>"; };
+		293CEAEF73F4F0A38B47777F /* Pods_TestAppDM.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestAppDM.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8EF3CA99A0136A68F7A4378 /* Pods-TestAppDM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppDM.release.xcconfig"; path = "Target Support Files/Pods-TestAppDM/Pods-TestAppDM.release.xcconfig"; sourceTree = "<group>"; };
+		AB49909428A5FF4A00BA4F59 /* FusionCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FusionCloud.framework; sourceTree = "<group>"; };
+		C789A643202DD93F5EBDA952 /* Pods-TestAppDM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppDM.debug.xcconfig"; path = "Target Support Files/Pods-TestAppDM/Pods-TestAppDM.debug.xcconfig"; sourceTree = "<group>"; };
 		D6712AB028430FB1001D123C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D67A87D027CB37030021C094 /* SSLPinningManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSLPinningManager.swift; sourceTree = "<group>"; };
 		D67A87D327CB37040021C094 /* devcert.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = devcert.cer; sourceTree = "<group>"; };
-		D68F21A8282956B000BC809A /* FusionCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FusionCloud.framework; sourceTree = "<group>"; };
 		D6A6988B27CA91F900324851 /* TestAppDM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestAppDM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6A6988E27CA91F900324851 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D6A6989027CA91F900324851 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -84,8 +84,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D615D671283A11C4004A1772 /* FusionCloud.framework in Frameworks */,
-				A552C7450BB97BC62FA47227 /* Pods_TestAppDM.framework in Frameworks */,
+				AB49909528A5FF4A00BA4F59 /* FusionCloud.framework in Frameworks */,
+				BD8275CE22FFF1A9EA188FE4 /* Pods_TestAppDM.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,11 +106,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		019409AEF3544BDEE69BE291 /* Frameworks */ = {
+		9C1D0D3BA29DBEEEADF97992 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D68F21A8282956B000BC809A /* FusionCloud.framework */,
-				1B21635AC3E577D76D4E8E01 /* Pods_TestAppDM.framework */,
+				AB49909428A5FF4A00BA4F59 /* FusionCloud.framework */,
+				293CEAEF73F4F0A38B47777F /* Pods_TestAppDM.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -133,7 +133,7 @@
 				D6A698B127CA91FA00324851 /* TestAppDMUITests */,
 				D6A6988C27CA91F900324851 /* Products */,
 				F55F502395023371028C1BD0 /* Pods */,
-				019409AEF3544BDEE69BE291 /* Frameworks */,
+				9C1D0D3BA29DBEEEADF97992 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -183,8 +183,8 @@
 		F55F502395023371028C1BD0 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				B964CD207CB90F12FD42882A /* Pods-TestAppDM.debug.xcconfig */,
-				58EE9A92193D0C9530B9B523 /* Pods-TestAppDM.release.xcconfig */,
+				C789A643202DD93F5EBDA952 /* Pods-TestAppDM.debug.xcconfig */,
+				A8EF3CA99A0136A68F7A4378 /* Pods-TestAppDM.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -196,12 +196,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D6A698B827CA91FA00324851 /* Build configuration list for PBXNativeTarget "TestAppDM" */;
 			buildPhases = (
-				35B88AD1961B28752CC016FE /* [CP] Check Pods Manifest.lock */,
+				1A0F231C6021A9BDC04005C1 /* [CP] Check Pods Manifest.lock */,
 				D6A6988727CA91F900324851 /* Sources */,
 				D6A6988827CA91F900324851 /* Frameworks */,
 				D6A6988927CA91F900324851 /* Resources */,
-				D58E9DAD8AF593CBD6015D17 /* [CP] Embed Pods Frameworks */,
 				D615D673283A11C4004A1772 /* Embed Frameworks */,
+				19A7887A54CCF13DA0CC97CB /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -321,7 +321,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		35B88AD1961B28752CC016FE /* [CP] Check Pods Manifest.lock */ = {
+		19A7887A54CCF13DA0CC97CB /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TestAppDM/Pods-TestAppDM-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TestAppDM/Pods-TestAppDM-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TestAppDM/Pods-TestAppDM-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1A0F231C6021A9BDC04005C1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -341,23 +358,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D58E9DAD8AF593CBD6015D17 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TestAppDM/Pods-TestAppDM-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TestAppDM/Pods-TestAppDM-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TestAppDM/Pods-TestAppDM-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -545,7 +545,7 @@
 		};
 		D6A698B927CA91FA00324851 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B964CD207CB90F12FD42882A /* Pods-TestAppDM.debug.xcconfig */;
+			baseConfigurationReference = C789A643202DD93F5EBDA952 /* Pods-TestAppDM.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -562,6 +562,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationLandscapeLeft;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -580,7 +581,7 @@
 		};
 		D6A698BA27CA91FA00324851 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 58EE9A92193D0C9530B9B523 /* Pods-TestAppDM.release.xcconfig */;
+			baseConfigurationReference = A8EF3CA99A0136A68F7A4378 /* Pods-TestAppDM.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -596,6 +597,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationLandscapeLeft;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
