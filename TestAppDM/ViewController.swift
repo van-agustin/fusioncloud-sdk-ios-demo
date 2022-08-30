@@ -82,9 +82,10 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 txtPaymentResult.backgroundColor = UIColor.systemRed;
                 txtPaymentResult.textColor = UIColor.white;
                 txtPaymentResult.text = "TRANSACTION TIMEOUT"
-                btnAbort.isHidden=true
-                btnPurchase.isEnabled=true
-                btnRefund.isEnabled=true
+//                btnAbort.isHidden=true
+//                btnPurchase.isEnabled=true
+//                btnRefund.isEnabled=true
+//                btnLogin.isEnabled=true
             }
             
         }
@@ -152,7 +153,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         socket = WebSocket(request: URLRequest(url: URL(string: fusionCloudConfig!.serverDomain!)!))
         socket.delegate = self
         socket.connect()
-        self.receiverDelegate = self 
+        self.receiverDelegate = self
         
         btnAbort.isHidden=true
         imgLoading.isHidden=true;
@@ -175,7 +176,8 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     }
     
     @IBAction func btnDoLogin(_ sender: UIButton) {
-        SSlPinningManager.shared.callAnyApi(urlString: fusionCloudConfig?.serverDomain ?? "", isCertificatePinning: true) { (response) in DispatchQueue.main.async {
+        btnLogin.isEnabled = false
+        SSlPinningManager.shared.callAnyApi(urlString: fusionCloudConfig?.serverDomain ?? "", isCertificatePinning: true, testEnvironment: fusionCloudConfig?.testEnvironment ?? true) { (response) in DispatchQueue.main.async {
                     if response.contains("successful") {
                         self.isCertPin = true
                         self.doLogin()
@@ -202,6 +204,11 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     func doTransactionStatus() {
         inErrorHandling = true
         txtPaymentUIDisplay.text = "CHECKING TRANSACTION STATUS"
+        
+        btnLogin.isEnabled = false
+        btnPurchase.isEnabled = false
+        btnRefund.isEnabled = false
+        btnAbort.isHidden=true
         
         fusionCloudConfig!.messageHeader?.messageCategory = "TransactionStatus"
         fusionCloudConfig!.messageHeader?.serviceID = UUID().uuidString
@@ -308,7 +315,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 let saleItem1 = SaleItem()
                     saleItem1.itemID = 1
                     saleItem1.productCode = "SKU00FFDDG"
-                    saleItem1.unitMeasure = "Unit"
+                    saleItem1.unitOfMeasure = "Unit"
                     saleItem1.quantity = 1
                     saleItem1.unitPrice = 42.50
                     saleItem1.productLabel = "NVIDIA GEFORCE RTX 3090"
@@ -394,7 +401,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     func sendMessage<T: Mappable>(message: String, requestBody: T, messageHeader: MessageHeader,securityTrailer: SecurityTrailer, type: String){
         
-        print(fusionCloudConfig!.kekValue!)
+        //print(fusionCloudConfig!.kekValue!)
         let request = crypto.buildRequest(kek: fusionCloudConfig!.kekValue!, request: requestBody, header: messageHeader, security: securityTrailer, type: type)
         
         appendLog(content: "\n\nRequest: \(request)")
@@ -478,10 +485,16 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             self.btnAbort.isEnabled = enableButtons
             self.btnRefund.isEnabled = enableButtons
         }
+        btnLogin.isEnabled = true
     }
     
     func handleDisplayRequest(messageHeader: MessageHeader, displayRequest: DisplayRequest) {
-        txtPaymentUIDisplay.text = displayRequest.getCashierDisplayAsPlainText()
+        if !inErrorHandling {
+            stopTimer()
+            secondsRemaining = timoutLimit
+            txtPaymentUIDisplay.text = displayRequest.getCashierDisplayAsPlainText()
+            timeoutStart()
+        }
     }
     
     func handlePaymentResponse(messageHeader: MessageHeader, paymentResponse: PaymentResponse) {
@@ -496,7 +509,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         let authorizedAmount = paymentResponse.paymentResult?.amountsResp?.authorizedAmount ?? 0;
         let tipAmount = paymentResponse.paymentResult?.amountsResp?.tipAmount ?? 0;
         let surchargeAmount = paymentResponse.paymentResult?.amountsResp?.surchargeAmount ?? 0;
-        let maskedPAN = paymentResponse.paymentResult?.paymentInstrumentData?.cardData?.maskPan ?? "";
+        let maskedPAN = paymentResponse.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
         let success = paymentResponse.response?.isSuccess() == true;
         
         
@@ -552,7 +565,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         let authorizedAmount = amountsResp?.authorizedAmount ?? 0;
         let tipAmount = amountsResp?.tipAmount ?? 0;
         let surchargeAmount = amountsResp?.surchargeAmount ?? 0;
-        let maskedPAN = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.paymentResult?.paymentInstrumentData?.cardData?.maskPan ?? "";
+        let maskedPAN = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
         
         
         
@@ -567,6 +580,10 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             txtPaymentResult.text = "PAYMENT SUCCESSFUL"
             txtPaymentUIDisplay.text=""
             stopTimer()
+            btnAbort.isHidden=true
+            btnPurchase.isEnabled=true
+            btnRefund.isEnabled=true
+            btnLogin.isEnabled=true
             
         }
         else { //add retry here (loop)
@@ -580,6 +597,10 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 txtPaymentResult.text = "PAYMENT CANCELLED"
                 txtPaymentUIDisplay.text=""
                 stopTimer()
+                btnAbort.isHidden=true
+                btnPurchase.isEnabled=true
+                btnRefund.isEnabled=true
+                btnLogin.isEnabled=true
             }
             else {
                 txtPaymentResult.backgroundColor = UIColor.systemRed;
@@ -587,15 +608,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 txtPaymentResult.text = "PAYMENT FAILED"
                 txtPaymentUIDisplay.text=""
                 stopTimer()
+                btnAbort.isHidden=true
+                btnPurchase.isEnabled=true
+                btnRefund.isEnabled=true
+                btnLogin.isEnabled=true
             }
         }
-        
-        btnAbort.isHidden=true
-        btnPurchase.isEnabled=true
-        btnRefund.isEnabled=true
-        btnLogin.isEnabled=true
-        
-        
     }
     
     func appendLog(content: String) {

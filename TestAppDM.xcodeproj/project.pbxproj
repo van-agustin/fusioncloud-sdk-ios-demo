@@ -11,10 +11,8 @@
 		AB8B828528A21E8300982344 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989227CA91F900324851 /* ViewController.swift */; };
 		D615D671283A11C4004A1772 /* FusionCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; };
 		D615D672283A11C4004A1772 /* FusionCloud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D68F21A8282956B000BC809A /* FusionCloud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D67A87D527CB37040021C094 /* GlobalSign.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87CE27CB37030021C094 /* GlobalSign.cer */; };
-		D67A87D627CB37040021C094 /* datamesh_public.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87CF27CB37030021C094 /* datamesh_public.cer */; };
 		D67A87D727CB37040021C094 /* SSLPinningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D67A87D027CB37030021C094 /* SSLPinningManager.swift */; };
-		D67A87DA27CB37040021C094 /* USERTrust RSA Certification Authority.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87D327CB37040021C094 /* USERTrust RSA Certification Authority.cer */; };
+		D67A87DA27CB37040021C094 /* devcert.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87D327CB37040021C094 /* devcert.cer */; };
 		D6A6988F27CA91F900324851 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6988E27CA91F900324851 /* AppDelegate.swift */; };
 		D6A6989127CA91F900324851 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989027CA91F900324851 /* SceneDelegate.swift */; };
 		D6A6989627CA91F900324851 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6A6989427CA91F900324851 /* Main.storyboard */; };
@@ -62,10 +60,8 @@
 		58EE9A92193D0C9530B9B523 /* Pods-TestAppDM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppDM.release.xcconfig"; path = "Target Support Files/Pods-TestAppDM/Pods-TestAppDM.release.xcconfig"; sourceTree = "<group>"; };
 		B964CD207CB90F12FD42882A /* Pods-TestAppDM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppDM.debug.xcconfig"; path = "Target Support Files/Pods-TestAppDM/Pods-TestAppDM.debug.xcconfig"; sourceTree = "<group>"; };
 		D6712AB028430FB1001D123C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		D67A87CE27CB37030021C094 /* GlobalSign.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = GlobalSign.cer; sourceTree = "<group>"; };
-		D67A87CF27CB37030021C094 /* datamesh_public.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = datamesh_public.cer; sourceTree = "<group>"; };
 		D67A87D027CB37030021C094 /* SSLPinningManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSLPinningManager.swift; sourceTree = "<group>"; };
-		D67A87D327CB37040021C094 /* USERTrust RSA Certification Authority.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "USERTrust RSA Certification Authority.cer"; sourceTree = "<group>"; };
+		D67A87D327CB37040021C094 /* devcert.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = devcert.cer; sourceTree = "<group>"; };
 		D68F21A8282956B000BC809A /* FusionCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FusionCloud.framework; sourceTree = "<group>"; };
 		D6A6988B27CA91F900324851 /* TestAppDM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestAppDM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6A6988E27CA91F900324851 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -122,10 +118,8 @@
 		D67A87CC27CB36F90021C094 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				D67A87CF27CB37030021C094 /* datamesh_public.cer */,
-				D67A87CE27CB37030021C094 /* GlobalSign.cer */,
 				D67A87D027CB37030021C094 /* SSLPinningManager.swift */,
-				D67A87D327CB37040021C094 /* USERTrust RSA Certification Authority.cer */,
+				D67A87D327CB37040021C094 /* devcert.cer */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -304,10 +298,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D6A6989E27CA91F900324851 /* LaunchScreen.storyboard in Resources */,
-				D67A87D527CB37040021C094 /* GlobalSign.cer in Resources */,
 				D6A6989B27CA91F900324851 /* Assets.xcassets in Resources */,
-				D67A87DA27CB37040021C094 /* USERTrust RSA Certification Authority.cer in Resources */,
-				D67A87D627CB37040021C094 /* datamesh_public.cer in Resources */,
+				D67A87DA27CB37040021C094 /* devcert.cer in Resources */,
 				D6A6989627CA91F900324851 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
