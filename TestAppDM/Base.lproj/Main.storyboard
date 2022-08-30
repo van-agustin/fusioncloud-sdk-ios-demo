@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QHo-VR-Nkw">
-                                <rect key="frame" x="503" y="20" width="501" height="737"/>
+                                <rect key="frame" x="545" y="390" width="501" height="358"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="labelColor"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -26,7 +26,7 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DLT-QG-fjd">
-                                <rect key="frame" x="905" y="753" width="99" height="27"/>
+                                <rect key="frame" x="947" y="744" width="99" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="gray" title="Clear"/>
@@ -35,7 +35,7 @@
                                 </connections>
                             </button>
                             <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QAZ-Fb-Y5l">
-                                <rect key="frame" x="20" y="20" width="420" height="205"/>
+                                <rect key="frame" x="62" y="11" width="420" height="205"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" layoutMarginsFollowReadableWidth="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kj2-Dk-FME">
@@ -98,11 +98,17 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lt5-u4-uQk">
+                                        <rect key="frame" x="19" y="163" width="216" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                             </view>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="F9I-cB-DEq">
-                                <rect key="frame" x="20" y="473" width="420" height="284"/>
+                                <rect key="frame" x="62" y="464" width="420" height="284"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="keX-a5-WCN">
@@ -164,11 +170,18 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="_" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cJy-wd-Tka">
+                                        <rect key="frame" x="8" y="255" width="404" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                             </view>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="k6U-La-3O3">
-                                <rect key="frame" x="20" y="249" width="420" height="187"/>
+                                <rect key="frame" x="62" y="240" width="420" height="187"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="llO-OO-c35">
@@ -185,7 +198,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </activityIndicatorView>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Payment UI Display" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X3X-jt-tsl">
-                                        <rect key="frame" x="36" y="9" width="348" height="46"/>
+                                        <rect key="frame" x="0.0" y="9" width="420" height="46"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                         <nil key="textColor"/>
@@ -195,7 +208,7 @@
                                 <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WFb-Og-Pdo">
-                                <rect key="frame" x="811" y="753" width="86" height="27"/>
+                                <rect key="frame" x="853" y="744" width="86" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="gray" title="Bottom"/>
@@ -203,6 +216,15 @@
                                     <action selector="btnBottom:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fiN-KL-yTT"/>
                                 </connections>
                             </button>
+                            <wkWebView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bJE-U1-pAJ">
+                                <rect key="frame" x="545" y="20" width="487" height="347"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -215,9 +237,11 @@
                         <outlet property="btnPurchase" destination="Qj2-hp-8hg" id="kSQ-ig-8Lq"/>
                         <outlet property="btnRefund" destination="dp5-J5-aAZ" id="Iga-lN-aKo"/>
                         <outlet property="imgLoading" destination="kKa-Tg-hs3" id="l16-Tr-qpF"/>
+                        <outlet property="txtErrorCondition" destination="cJy-wd-Tka" id="hXu-NJ-wbl"/>
                         <outlet property="txtLogs" destination="QHo-VR-Nkw" id="vtO-zu-VzC"/>
                         <outlet property="txtPaymentResult" destination="jgG-P6-ctP" id="m7J-k3-hBy"/>
                         <outlet property="txtPaymentUIDisplay" destination="X3X-jt-tsl" id="nta-IL-HKS"/>
+                        <outlet property="txtProductCode" destination="lt5-u4-uQk" id="9Id-3g-KTL"/>
                         <outlet property="txtRequestedAmount" destination="Lac-vF-fHL" id="MXX-fe-bOx"/>
                         <outlet property="txtResultAuthorizedAmount" destination="keX-a5-WCN" id="77e-VW-cFg"/>
                         <outlet property="txtResultMaskedPAN" destination="XKj-Va-K6h" id="WYK-Qo-kR2"/>
@@ -228,6 +252,7 @@
                         <outlet property="vwLoading" destination="k6U-La-3O3" id="stC-e8-uCk"/>
                         <outlet property="vwRequest" destination="QAZ-Fb-Y5l" id="GtC-WI-a7P"/>
                         <outlet property="vwResult" destination="F9I-cB-DEq" id="dE9-Lp-i1B"/>
+                        <outlet property="wvReceipt" destination="bJE-U1-pAJ" id="No7-HK-cJI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

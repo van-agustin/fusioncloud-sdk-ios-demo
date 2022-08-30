@@ -14,6 +14,7 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
     
     public static let shared = SSlPinningManager()
     var isCertificatePinning:Bool = false
+    var testEnvironment:Bool = true
     var hardcodedPublicKey:String = "iie1VXtL7HzAMF+/PVPR9xzT80kQxdZeJ+zduCB3uj0="
     
     let rsa2048Asn1Header:[UInt8] = [
@@ -42,7 +43,7 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
             return
         }
                 
-        //extarct certificate from each api
+        //extract certificate from each api
         if self.isCertificatePinning {
             //compare certificates remote and local
             let certificate =  SecTrustGetCertificateAtIndex(serverTrust, 2)
@@ -54,12 +55,14 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
             
             let remoteCertiData:NSData  = SecCertificateCopyData(certificate!)
             
+            let path = (testEnvironment) ? "devcert" : "prod cert name"
             
-            guard let pathToCertificate = Bundle.main.path(forResource: "USERTrust RSA Certification Authority", ofType: "cer") else {
+            guard let pathToCertificate = Bundle.main.path(forResource: path, ofType: "cer") else {
                 fatalError("no local path found")
             }
             
             let localCertiData = NSData(contentsOfFile: pathToCertificate)
+            
             if isSecuredServer && remoteCertiData.isEqual(to:localCertiData! as Data)  {
                 completionHandler(.useCredential, URLCredential.init(trust: serverTrust))
             }else{
@@ -84,10 +87,11 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
         }
     }
     
-    public func callAnyApi(urlString:String,isCertificatePinning:Bool,response:@escaping ((String)-> ())){
+    public func callAnyApi(urlString:String,isCertificatePinning:Bool, testEnvironment:Bool,response:@escaping ((String)-> ())){
         
         let sessionObj = URLSession(configuration: .ephemeral,delegate: self,delegateQueue: nil)
         self.isCertificatePinning = isCertificatePinning
+        self.testEnvironment = testEnvironment
         var result:String =  ""
         
         guard let url = URL.init(string: urlString) else {

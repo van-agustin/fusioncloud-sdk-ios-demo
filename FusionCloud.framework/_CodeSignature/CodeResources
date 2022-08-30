@@ -4,10 +4,6 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>GlobalSign.cer</key>
-		<data>
-		deCrthOFEiccBPhf3d445LckLv4=
-		</data>
 		<key>Headers/FusionCloud-Swift.h</key>
 		<data>
 		iNAdAH0QA/+qp9tsGrgo2beymoE=
@@ -18,42 +14,31 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		Dvzb8KWwG+BOPQnK5GaAwrdw17o=
+		5WYyopA4wReV5ZXhC8w42TaSFOI=
 		</data>
 		<key>Modules/FusionCloud.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		NQ751KAj0W0giNN9YUqVfWn4PF8=
+		N7xaYFnXZKIFrYDUq94fzhfFmfw=
 		</data>
 		<key>Modules/FusionCloud.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		oP6iB60XnRsxd21la5LnhrlyiSE=
+		luV4kjejQ1FAYF2iI1ujpJ88dv8=
 		</data>
 		<key>Modules/FusionCloud.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		qfTL1HALrLjhDn23V+5fXnLa1W0=
+		YBRkfWd19UN+4lk5Wfim5o9H7dY=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
 		h/phznl0iODvNj9WIOC9lIqfYOc=
 		</data>
-		<key>USERTrust RSA Certification Authority.cer</key>
+		<key>dev.cer</key>
 		<data>
 		K48bVzMNu6LQemxR9w7pDdq5rY4=
-		</data>
-		<key>datamesh_public.cer</key>
-		<data>
-		UlxH+zpeBlX71L6WPKHpTV/stD0=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>GlobalSign.cer</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ykLdQXRf0LgeuQI2LPnYv3Gdob0bHvyUb1tMmfQsG54=
-			</data>
-		</dict>
 		<key>Headers/FusionCloud-Swift.h</key>
 		<dict>
 			<key>hash2</key>
@@ -72,21 +57,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			7yZbJesz2RESx1GLqzE9A+sj5i+HqCKqnTaTUlifWus=
+			+m743V0tDiPjxo8i2cCbRvQshZyWp5ztZZviM6VlfzQ=
 			</data>
 		</dict>
 		<key>Modules/FusionCloud.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			2b6pUc+vOSAQjYgPg3DEZclUyrfyGty8sUbhJpSYApY=
+			it0D4lwnrOhdBtT1sF5lvPhN+IEfuPyw03p51wiIehE=
 			</data>
 		</dict>
 		<key>Modules/FusionCloud.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			pWVuLu8XcxhV/8AVtvxC0+PhjvfqlNuxRvVy56f7afc=
+			NB7nAZR5rSTai94XHiUSn+tNqKxzsj1KPkrWQA9pGyk=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -96,18 +81,11 @@
 			+dzPYgEFX/mzA0dX5NC1ocClDhA/t9XYvmcDzcOq1Ec=
 			</data>
 		</dict>
-		<key>USERTrust RSA Certification Authority.cer</key>
+		<key>dev.cer</key>
 		<dict>
 			<key>hash2</key>
 			<data>
 			55PJsC/YqhPiHDEiisywgRlkO3SciYlksXRtRsPUy9I=
-			</data>
-		</dict>
-		<key>datamesh_public.cer</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			FDY4IlF+KYmwh9DJpC7vE0p3S9CyoGZNRVr3hLwI9NA=
 			</data>
 		</dict>
 	</dict>
