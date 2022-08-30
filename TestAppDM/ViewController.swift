@@ -145,10 +145,8 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
 
     public func initConfig() {
         // Construct configurabation helper
-        fusionCloudConfig.saleID = "VA POS"
-        fusionCloudConfig.poiID = "DMGVA001"
-//        fusionCloudConfig.saleID = "DMGProductionVerificationTest2"
-//        fusionCloudConfig.poiID = "E3330010"
+        fusionCloudConfig.saleID = "<<SaleID>>"
+        fusionCloudConfig.poiID = "<<POIID>>"
         self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
         socket = fusionClient.socket
         socket.delegate = self
