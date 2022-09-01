@@ -55,7 +55,7 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
             
             let remoteCertiData:NSData  = SecCertificateCopyData(certificate!)
             
-            let path = (testEnvironment) ? "devcert" : "prod cert name"
+            let path = (testEnvironment) ? "devcert" : "prodcert"
             
             guard let pathToCertificate = Bundle.main.path(forResource: path, ofType: "cer") else {
                 fatalError("no local path found")
@@ -90,8 +90,10 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
     public func callAnyApi(urlString:String,isCertificatePinning:Bool, testEnvironment:Bool,response:@escaping ((String)-> ())){
         
         let sessionObj = URLSession(configuration: .ephemeral,delegate: self,delegateQueue: nil)
-        self.isCertificatePinning = isCertificatePinning
+        self.isCertificatePinning = testEnvironment ? isCertificatePinning : false
         self.testEnvironment = testEnvironment
+//        self.isCertificatePinning = isCertificatePinning
+        self.hardcodedPublicKey = testEnvironment ? "iie1VXtL7HzAMF+/PVPR9xzT80kQxdZeJ+zduCB3uj0=" : "qXVXKG1J6+W1Nlcq5q2nGNjFMnTWgyHx2fYvofigyis="
         var result:String =  ""
         
         guard let url = URL.init(string: urlString) else {
