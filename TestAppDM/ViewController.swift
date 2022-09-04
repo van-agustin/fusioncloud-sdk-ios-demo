@@ -48,26 +48,44 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     var productCode: String?
     var inErrorHandling = false
+    var isIncorrectServiceID = false
     var inLogin = false
     
     /// ServiceId of the current request in progress
-    var currentServiceId: String?
+    var currentPaymentServiceId: String?
+    var currentTransactionServiceID: String?
     var currentTransaction: String?
+    var incorrectValue: String?
+    var paymentBrands = [String]()
     
     var timoutLimit = 0
     var ErrorHandlingLimit = 0
     var secondsRemaining = 0
     
     //for testing
-    var transactionStatusRequestCount = 0;
+    var transactionStatusRequestCount = 0
+    
     
     func initValues(){
         timoutLimit = 60// 60 seconds as per documentation
         ErrorHandlingLimit = 90 //90 seconds
+
+        //Add allowedpaymentbrands
+        paymentBrands.append("VISA")
+        paymentBrands.append("MasterCard")
+        paymentBrands.append("American Express")
+        paymentBrands.append("Diners Club")
+        paymentBrands.append("JCB")
+        paymentBrands.append("UnionPay")
+        paymentBrands.append("CUP Debit")
+        paymentBrands.append("Discover")
+        //paymentBrands.append("Card")
         
         inLogin = false
         inErrorHandling = false
+        isIncorrectServiceID = false
         txtTimer.text = "0"
+        transactionStatusRequestCount = 0
         
         txtErrorCondition.textColor = UIColor.orange
     }
@@ -86,14 +104,25 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     @objc func updateCounter(){
         if secondsRemaining > 0 {
-            //print("\(secondsRemaining) seconds." )
             txtTimer.text=String(secondsRemaining)
+        
+            if(isIncorrectServiceID){
+                if inErrorHandling {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)){
+                        self.doTransactionStatus()
+                    }
+                }
+                
+                print("Received an incorrect service ID in transaction: \(String(describing: currentTransaction ?? "NULL"))")
+                print("\(currentTransactionServiceID ?? "NULL") -- Current Transaction Service ID")
+                print("\(incorrectValue ?? "NULL") -- Incorrect Service ID")
+                txtErrorCondition.text = "incorrect service ID"
+                isIncorrectServiceID=false
+            }
             secondsRemaining -= 1
-//            if(inErrorHandling && secondsRemaining.isMultiple(of: 10)){
-//                self.doTransactionStatus()
-//            }
-        } else if !inLogin {
-                        
+        }
+        else if !inLogin {
+               print("!inLogin")
             if (!inErrorHandling) {
                 btnAbort.isHidden=true
                 resetTimer()
@@ -110,10 +139,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 btnPurchase.isEnabled=true
                 btnRefund.isEnabled=true
                 btnLogin.isEnabled=true
+                print("transactionStatusRequestCount: \(transactionStatusRequestCount)")
             }
             
         }
         else if inLogin {
+            print("inLogin")
             stopTimer()
         }
     }
@@ -152,8 +183,8 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
 
     public func initConfig() {
         // Construct configurabation helper
-        fusionCloudConfig.saleID = "<<SaleID>>"
-        fusionCloudConfig.poiID = "<<POIID>>"
+        fusionCloudConfig.saleID = "<<SALE ID>>"
+        fusionCloudConfig.poiID = "<<POI ID>>"
         self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
         socket = fusionClient.socket
         
@@ -242,13 +273,13 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             btnRefund.isEnabled = false
             btnAbort.isHidden=true
             
-//            currentServiceId = UUID().uuidString
+            currentTransactionServiceID = UUID().uuidString
             fusionClient.messageHeader?.messageCategory = "TransactionStatus"
-            fusionClient.messageHeader?.serviceID =  UUID().uuidString
+            fusionClient.messageHeader?.serviceID =  currentTransactionServiceID
             
             let transactionStatusRequest = TransactionStatusRequest()
             let messageReference = MessageReference()
-            messageReference.serviceID = currentServiceId
+            messageReference.serviceID = currentPaymentServiceId
             messageReference.saleID = fusionCloudConfig.saleID
             messageReference.poiID = fusionCloudConfig.poiID
             messageReference.messageCategory = "Payment"
@@ -257,11 +288,6 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             //add catch here if sendmessage fails
             fusionClient.sendMessage(requestBody: transactionStatusRequest, type: "TransactionStatusRequest")
         }
-        else {
-//            inErrorHandling = false
-            print("transactionStatusRequestCount: \(transactionStatusRequestCount)")
-        }
-        
     }
     
     func doLogin() {
@@ -271,11 +297,11 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             return
         }
             
-        currentServiceId = UUID().uuidString
+        currentTransactionServiceID = UUID().uuidString
         let dateFormat = DateFormatter()
         dateFormat.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
             
-        fusionClient.messageHeader?.serviceID = currentServiceId
+        fusionClient.messageHeader?.serviceID = currentTransactionServiceID
         fusionClient.messageHeader?.messageCategory = "Login"
         fusionClient.messageHeader?.poiID = fusionCloudConfig.poiID //van remove
         fusionClient.messageHeader?.saleID = fusionCloudConfig.saleID //van remove
@@ -310,7 +336,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         let abortRequest = AbortRequest()
         let messageReference = MessageReference()
             messageReference.messageCategory = "Payment"
-            messageReference.serviceID = currentServiceId
+            messageReference.serviceID = currentPaymentServiceId
             messageReference.saleID = fusionCloudConfig.saleID
             messageReference.poiID = fusionCloudConfig.poiID
         
@@ -336,8 +362,9 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         btnRefund.isEnabled=false
         btnLogin.isEnabled=false
         
-        currentServiceId = UUID().uuidString
-        fusionClient.messageHeader?.serviceID = currentServiceId
+        currentPaymentServiceId = UUID().uuidString
+        currentTransactionServiceID = currentPaymentServiceId
+        fusionClient.messageHeader?.serviceID = currentPaymentServiceId
         fusionClient.messageHeader?.messageCategory = "Payment"
         var productCode = txtProductCode.text
         if (productCode?.trimmingCharacters(in: .whitespacesAndNewlines) == "") {
@@ -364,6 +391,13 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                     saleItem1.quantity = 1
                     saleItem1.unitPrice = 42.50
                     saleItem1.productLabel = "NVIDIA GEFORCE RTX 3090"
+        
+                if(paymentBrands.count>0){
+                let transactionConditions = TransactionConditions()
+                    transactionConditions.allowedPaymentBrands = paymentBrands
+                    
+                    paymentTransaction.transactionConditions = transactionConditions
+                }
         
                 paymentTransaction.amountsReq = amountsReq
                 paymentTransaction.saleItem = [saleItem1]
@@ -485,7 +519,10 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                     appendLog(content: "Invalid response. Payload == nil")
                     return
                 }
-                handleLoginResponse(messageHeader: mh!, loginResponse: r!)
+                if inLogin{
+                    handleLoginResponse(messageHeader: mh!, loginResponse: r!)
+                }
+               
                 break
             case "Payment":
                 if !inErrorHandling && secondsRemaining > 0 {
@@ -531,7 +568,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     func handleLoginResponse(messageHeader: MessageHeader, loginResponse: LoginResponse) {
         var enableButtons = true
-        
+        if(messageHeader.serviceID != currentTransactionServiceID){
+            incorrectValue = messageHeader.serviceID
+            isIncorrectServiceID = true
+            inLogin=true
+            return
+        }
         if (loginResponse.response?.result != "Success") {
             enableButtons = false
             appendLog(content: "Login error")
@@ -546,162 +588,164 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     }
     
     func handleDisplayRequest(messageHeader: MessageHeader, displayRequest: DisplayRequest) {
-        if (!inErrorHandling && messageHeader.serviceID == currentServiceId) {
+        if(messageHeader.serviceID != currentTransactionServiceID){
+            print("ignoring incorrect service id display request")
+            incorrectValue = messageHeader.serviceID
+            isIncorrectServiceID=true
+            return
+        }
+        txtPaymentUIDisplay.text = displayRequest.getCashierDisplayAsPlainText()
+        if (!inErrorHandling) {
             stopTimer()
             secondsRemaining = timoutLimit
-            txtPaymentUIDisplay.text = displayRequest.getCashierDisplayAsPlainText()
             timeoutStart()
         }
-        if(messageHeader.serviceID != currentServiceId){
-            print("ignoring display request with incorrect serviceid")
-        }
+       
     }
     
     func handlePaymentResponse(messageHeader: MessageHeader, paymentResponse: PaymentResponse) {
-        if(messageHeader.serviceID == currentServiceId){
-            // Format decimal as currency
-            let numberFormatter = NumberFormatter()
-            numberFormatter.maximumFractionDigits = 2
-            numberFormatter.minimumFractionDigits = 2
-            numberFormatter.currencyCode = "AUD"
-            numberFormatter.numberStyle = .currency
+        if(messageHeader.serviceID != currentPaymentServiceId){
+            incorrectValue = messageHeader.serviceID
+            isIncorrectServiceID=true
+            return
+        }
+        // Format decimal as currency
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 2
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.currencyCode = "AUD"
+        numberFormatter.numberStyle = .currency
 
-            
-            let authorizedAmount = paymentResponse.paymentResult?.amountsResp?.authorizedAmount ?? 0;
-            let tipAmount = paymentResponse.paymentResult?.amountsResp?.tipAmount ?? 0;
-            let surchargeAmount = paymentResponse.paymentResult?.amountsResp?.surchargeAmount ?? 0;
-            let maskedPAN = paymentResponse.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
-            let success = paymentResponse.response?.isSuccess() == true;
-            let receiptHTML = (paymentResponse.paymentReceipt?[0].getReceiptAsPlainText())
-            
+        
+        let authorizedAmount = paymentResponse.paymentResult?.amountsResp?.authorizedAmount ?? 0;
+        let tipAmount = paymentResponse.paymentResult?.amountsResp?.tipAmount ?? 0;
+        let surchargeAmount = paymentResponse.paymentResult?.amountsResp?.surchargeAmount ?? 0;
+        let maskedPAN = paymentResponse.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
+        let success = paymentResponse.response?.isSuccess() == true;
+        let receiptHTML = (paymentResponse.paymentReceipt?[0].getReceiptAsPlainText())
+        
 
+        
+        if(success) {
+            txtPaymentResult.backgroundColor = UIColor.systemGreen;
+            txtPaymentResult.textColor = UIColor.white;
+            txtPaymentResult.text = "PAYMENT SUCCESSFUL"
+            txtPaymentUIDisplay.text = ""
             
-            if(success) {
-                txtPaymentResult.backgroundColor = UIColor.systemGreen;
-                txtPaymentResult.textColor = UIColor.white;
-                txtPaymentResult.text = "PAYMENT SUCCESSFUL"
-                txtPaymentUIDisplay.text = ""
-                
-            }
-            else if(paymentResponse.response?.errorCondition=="Cancel"){
-                txtPaymentResult.backgroundColor = UIColor.systemYellow;
-                txtPaymentResult.textColor = UIColor.white;
-                txtPaymentResult.text = "PAYMENT CANCELLED"
-                txtPaymentUIDisplay.text=""
-            }
-            else {
-                txtPaymentResult.backgroundColor = UIColor.systemRed;
-                txtPaymentResult.textColor = UIColor.white;
-                txtPaymentResult.text = "PAYMENT FAILED"
-                txtPaymentUIDisplay.text=""
-                txtErrorCondition.text = paymentResponse.response?.additionalResponse
-            }
-            
-            txtResultAuthorizedAmount.text = numberFormatter.string(from: authorizedAmount);
-            txtResultTipAmount.text = numberFormatter.string(from: tipAmount);
-            txtResultSurchargeAmount.text = numberFormatter.string(from: surchargeAmount);
-            txtResultMaskedPAN.text = maskedPAN;
-            wvReceipt.loadHTMLString(receiptHTML ?? "", baseURL: Bundle.main.bundleURL)
+        }
+        else if(paymentResponse.response?.errorCondition=="Cancel"){
+            txtPaymentResult.backgroundColor = UIColor.systemYellow;
+            txtPaymentResult.textColor = UIColor.white;
+            txtPaymentResult.text = "PAYMENT CANCELLED"
+            txtPaymentUIDisplay.text=""
+        }
+        else {
+            txtPaymentResult.backgroundColor = UIColor.systemRed;
+            txtPaymentResult.textColor = UIColor.white;
+            txtPaymentResult.text = "PAYMENT FAILED"
+            txtPaymentUIDisplay.text=""
+            txtErrorCondition.text = paymentResponse.response?.additionalResponse
+        }
+        
+        txtResultAuthorizedAmount.text = numberFormatter.string(from: authorizedAmount);
+        txtResultTipAmount.text = numberFormatter.string(from: tipAmount);
+        txtResultSurchargeAmount.text = numberFormatter.string(from: surchargeAmount);
+        txtResultMaskedPAN.text = maskedPAN;
+        wvReceipt.loadHTMLString(receiptHTML ?? "", baseURL: Bundle.main.bundleURL)
 //            wvReceipt.reload()
-            
-            //Enable other buttons, hide abort
+        
+        //Enable other buttons, hide abort
+        btnAbort.isHidden=true
+        btnPurchase.isEnabled=true
+        btnRefund.isEnabled=true
+        btnLogin.isEnabled=true
+        
+        stopTimer()
+
+    }
+    
+    func handleTransactionStatusResponse(messageHeader: MessageHeader, transactionStatusResponse: TransactionStatusResponse) {
+        if((messageHeader.serviceID != currentTransactionServiceID)){
+            incorrectValue = messageHeader.serviceID
+            isIncorrectServiceID=true
+            return
+        }
+        
+        let success = transactionStatusResponse.response!.isSuccess() == true;
+        let errorCondition = transactionStatusResponse.response?.errorCondition ?? transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.response?.errorCondition
+        
+        
+        // Handle transactionStatusResponse
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 2
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.currencyCode = "AUD"
+        numberFormatter.numberStyle = .currency
+        
+        let amountsResp = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.paymentResult?.amountsResp
+        
+        let authorizedAmount = amountsResp?.authorizedAmount ?? 0;
+        let tipAmount = amountsResp?.tipAmount ?? 0;
+        let surchargeAmount = amountsResp?.surchargeAmount ?? 0;
+        let maskedPAN = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
+        let receiptHTML = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse!.paymentReceipt?[0].getReceiptAsPlainText()!
+        
+        
+        txtResultAuthorizedAmount.text = numberFormatter.string(from: authorizedAmount);
+        txtResultTipAmount.text = numberFormatter.string(from: tipAmount);
+        txtResultSurchargeAmount.text = numberFormatter.string(from: surchargeAmount);
+        txtResultMaskedPAN.text = maskedPAN;
+        
+        if(success && errorCondition==nil) {
+            if(currentPaymentServiceId != transactionStatusResponse.repeatedMessageResponse?.messageHeader!.serviceID){
+                incorrectValue = transactionStatusResponse.repeatedMessageResponse?.messageHeader!.serviceID ?? "NULL" + "--payment service id"
+                isIncorrectServiceID=true
+                return
+            }
+            txtPaymentResult.backgroundColor = UIColor.systemGreen;
+            txtPaymentResult.textColor = UIColor.white;
+            txtPaymentResult.text = "PAYMENT SUCCESSFUL"
+            txtPaymentUIDisplay.text=""
+            stopTimer()
             btnAbort.isHidden=true
             btnPurchase.isEnabled=true
             btnRefund.isEnabled=true
             btnLogin.isEnabled=true
-            
-            stopTimer()
-        }else{
-            print("incorrect serviceid - payment request")
+            wvReceipt.loadHTMLString(receiptHTML ?? "", baseURL: Bundle.main.bundleURL)
         }
-    }
-    
-    func handleTransactionStatusResponse(messageHeader: MessageHeader, transactionStatusResponse: TransactionStatusResponse) {
-        let success = transactionStatusResponse.response!.isSuccess() == true;
-        let errorCondition = transactionStatusResponse.response?.errorCondition ?? transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.response?.errorCondition
-        
-        // Handle transactionStatusResponse
-        if(transactionStatusResponse.repeatedMessageResponse?.messageHeader!.serviceID == currentServiceId){
+        else {
             
-            
-            let numberFormatter = NumberFormatter()
-            numberFormatter.maximumFractionDigits = 2
-            numberFormatter.minimumFractionDigits = 2
-            numberFormatter.currencyCode = "AUD"
-            numberFormatter.numberStyle = .currency
-            
-            let amountsResp = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.paymentResult?.amountsResp
-            
-            let authorizedAmount = amountsResp?.authorizedAmount ?? 0;
-            let tipAmount = amountsResp?.tipAmount ?? 0;
-            let surchargeAmount = amountsResp?.surchargeAmount ?? 0;
-            let maskedPAN = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
-            let receiptHTML = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse!.paymentReceipt?[0].getReceiptAsPlainText()!
-            
-            
-            txtResultAuthorizedAmount.text = numberFormatter.string(from: authorizedAmount);
-            txtResultTipAmount.text = numberFormatter.string(from: tipAmount);
-            txtResultSurchargeAmount.text = numberFormatter.string(from: surchargeAmount);
-            txtResultMaskedPAN.text = maskedPAN;
-            
-            if(success && errorCondition==nil) {
-                txtPaymentResult.backgroundColor = UIColor.systemGreen;
+            if(errorCondition=="InProgress" && secondsRemaining>0){
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
+                    self.doTransactionStatus()
+//                    inErrorHandling = false
+                }
+            } else if(errorCondition=="Cancel"){
+                txtPaymentResult.backgroundColor = UIColor.systemYellow;
                 txtPaymentResult.textColor = UIColor.white;
-                txtPaymentResult.text = "PAYMENT SUCCESSFUL"
+                txtPaymentResult.text = "PAYMENT CANCELLED"
                 txtPaymentUIDisplay.text=""
                 stopTimer()
                 btnAbort.isHidden=true
                 btnPurchase.isEnabled=true
                 btnRefund.isEnabled=true
                 btnLogin.isEnabled=true
-                wvReceipt.loadHTMLString(receiptHTML ?? "", baseURL: Bundle.main.bundleURL)
             }
-            else {
-                
-                if(errorCondition=="InProgress" && secondsRemaining>0){
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
-                        self.doTransactionStatus()
-//                    inErrorHandling = false
-                    }
-                } else if(errorCondition=="Cancel"){
-                    txtPaymentResult.backgroundColor = UIColor.systemYellow;
-                    txtPaymentResult.textColor = UIColor.white;
-                    txtPaymentResult.text = "PAYMENT CANCELLED"
-                    txtPaymentUIDisplay.text=""
-                    stopTimer()
-                    btnAbort.isHidden=true
-                    btnPurchase.isEnabled=true
-                    btnRefund.isEnabled=true
-                    btnLogin.isEnabled=true
-                }
-                else if (secondsRemaining>0){
-                    txtPaymentResult.backgroundColor = UIColor.systemRed;
-                    txtPaymentResult.textColor = UIColor.white;
-                    txtPaymentResult.text = "PAYMENT FAILED"
-                    txtPaymentUIDisplay.text=""
-                    txtErrorCondition.text = transactionStatusResponse.response!.additionalResponse
-                    stopTimer()
-                    btnAbort.isHidden=true
-                    btnPurchase.isEnabled=true
-                    btnRefund.isEnabled=true
-                    btnLogin.isEnabled=true
-                }
-                wvReceipt.loadHTMLString(receiptHTML ?? "", baseURL: Bundle.main.bundleURL)
-//                wvReceipt.reload()
+            else if (secondsRemaining>0){
+                txtPaymentResult.backgroundColor = UIColor.systemRed;
+                txtPaymentResult.textColor = UIColor.white;
+                txtPaymentResult.text = "PAYMENT FAILED"
+                txtPaymentUIDisplay.text=""
+                txtErrorCondition.text = transactionStatusResponse.response!.additionalResponse
+                stopTimer()
+                btnAbort.isHidden=true
+                btnPurchase.isEnabled=true
+                btnRefund.isEnabled=true
+                btnLogin.isEnabled=true
             }
-        }else{
-            print("incorrect serviceid")
-            print((transactionStatusResponse.repeatedMessageResponse?.messageHeader!.serviceID ?? "NULL") + "--transactionStatusResponse.repeatedMessageResponse?.messageHeader!.serviceID")
-            print((currentServiceId ?? "NULL") + "--currentServiceId")
-            txtErrorCondition.text = "incorrect serviceid"
-//            inErrorHandling = false
-            if(secondsRemaining>0){
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)){
-                    self.doTransactionStatus()
-                }
-            }
-          
+            wvReceipt.loadHTMLString(receiptHTML ?? "", baseURL: Bundle.main.bundleURL)
         }
+       
     }
     
     func appendLog(content: String) {
