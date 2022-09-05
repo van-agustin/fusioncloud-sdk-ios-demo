@@ -24,6 +24,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     @IBOutlet weak var btnLogin: UIButton!
     @IBOutlet weak var btnClear: UIButton!
     @IBOutlet weak var btnBottom: UIButton!
+    @IBOutlet weak var btnSelectAll: UIButton!
     
     @IBOutlet weak var txtRequestedAmount: UITextField!
     @IBOutlet weak var txtTipAmount: UITextField!
@@ -37,10 +38,15 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     
     @IBOutlet weak var txtResultAuthorizedAmount: UITextField!
-    
-    @IBOutlet weak var txtResultMaskedPAN: UITextField!
     @IBOutlet weak var txtResultSurchargeAmount: UITextField!
     @IBOutlet weak var txtResultTipAmount: UITextField!
+    @IBOutlet weak var txtResultMaskedPAN: UITextField!
+    @IBOutlet weak var txtCardAccount: UITextField!
+    @IBOutlet weak var txtPaymentBrand: UITextField!
+    @IBOutlet weak var txtEntryMode: UITextField!
+    @IBOutlet weak var txtPaymentType: UITextField!
+    @IBOutlet weak var txtTransactionID: UITextField!
+    @IBOutlet weak var txtApprovalCode: UITextField!
     
     
     @IBOutlet weak var txtTimer: UILabel!
@@ -56,7 +62,8 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     var currentTransactionServiceID: String?
     var currentTransaction: String?
     var incorrectValue: String?
-    var paymentBrands = [String]()
+    var warningMessage: String?
+//    var paymentBrands = [String]()
     
     var timoutLimit = 0
     var ErrorHandlingLimit = 0
@@ -66,28 +73,33 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     var transactionStatusRequestCount = 0
     
     
+    func clearResults(){
+        txtResultAuthorizedAmount.text = ""
+        txtResultTipAmount.text = ""
+        txtResultSurchargeAmount.text = ""
+        txtResultMaskedPAN.text = ""
+        txtCardAccount.text = ""
+        txtPaymentBrand.text = ""
+        txtEntryMode.text = ""
+        txtPaymentType.text = ""
+        txtTransactionID.text = ""
+        
+        txtErrorCondition.text = ""
+        inErrorHandling=false
+    }
+    
     func initValues(){
         timoutLimit = 60// 60 seconds as per documentation
         ErrorHandlingLimit = 90 //90 seconds
-
-        //Add allowedpaymentbrands
-        paymentBrands.append("VISA")
-        paymentBrands.append("MasterCard")
-        paymentBrands.append("American Express")
-        paymentBrands.append("Diners Club")
-        paymentBrands.append("JCB")
-        paymentBrands.append("UnionPay")
-        paymentBrands.append("CUP Debit")
-        paymentBrands.append("Discover")
-        //paymentBrands.append("Card")
         
         inLogin = false
-        inErrorHandling = false
+        //initValues = false
         isIncorrectServiceID = false
         txtTimer.text = "0"
         transactionStatusRequestCount = 0
+        warningMessage = nil
         
-        txtErrorCondition.textColor = UIColor.orange
+        txtErrorCondition.textColor = UIColor.systemYellow
     }
     
     
@@ -105,7 +117,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     @objc func updateCounter(){
         if secondsRemaining > 0 {
             txtTimer.text=String(secondsRemaining)
-        
+            
             if(isIncorrectServiceID){
                 if inErrorHandling {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)){
@@ -116,30 +128,29 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 print("Received an incorrect service ID in transaction: \(String(describing: currentTransaction ?? "NULL"))")
                 print("\(currentTransactionServiceID ?? "NULL") -- Current Transaction Service ID")
                 print("\(incorrectValue ?? "NULL") -- Incorrect Service ID")
-                txtErrorCondition.text = "incorrect service ID"
+                logErrorMessage(errorMessage: "incorrect service ID -- ignored")
                 isIncorrectServiceID=false
             }
             secondsRemaining -= 1
         }
         else if !inLogin {
-               print("!inLogin")
             if (!inErrorHandling) {
-                btnAbort.isHidden=true
                 resetTimer()
                 doAbort(abortReason: "Transaction Cancel")
                 self.doTransactionStatus()
             }
             else{
+                print("transactionStatusRequestCount: \(transactionStatusRequestCount)")
                 stopTimer()
                 txtPaymentUIDisplay.text="" //update this
                 txtPaymentResult.backgroundColor = UIColor.systemRed;
                 txtPaymentResult.textColor = UIColor.white;
                 txtPaymentResult.text = "TRANSACTION TIMEOUT"
+                txtErrorCondition.text = "Please check pinpad transaction history"
                 btnAbort.isHidden=true
                 btnPurchase.isEnabled=true
                 btnRefund.isEnabled=true
                 btnLogin.isEnabled=true
-                print("transactionStatusRequestCount: \(transactionStatusRequestCount)")
             }
             
         }
@@ -169,7 +180,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     var receiverDelegate: FusionCloudDelegate?
     
     var socket: WebSocket!
-    var isConnected = false
+    var isConnected = true
     let server = WebSocketServer()
     var isCertPin = false
     let crypto = Crypto()
@@ -190,8 +201,17 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         
     }
     
+    func showReceipt(doShow: Bool){
+        vwLoading.isHidden = doShow
+        wvReceipt.isHidden = !doShow
+    }
+    
+    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        txtLogs.isEditable = false
         
         initConfig()
         socket.delegate = self
@@ -200,6 +220,11 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         
         btnAbort.isHidden=true
         imgLoading.isHidden=true;
+        showReceipt(doShow: false)
+    }
+    
+    @IBAction func btnSelectAll(_ sender: Any) {
+        txtLogs.selectAll(self)
     }
     
     @IBAction func btnClear(_ sender: Any) {
@@ -220,9 +245,14 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         btnLogin.isEnabled=false
         btnPurchase.isEnabled=false
         btnRefund.isEnabled=false
+        if !inErrorHandling{
+            txtPaymentUIDisplay.text = "CANCELLING TRANSACTION"
+            doAbort(abortReason: "Transaction Cancel")
+        }
+        else {
+            secondsRemaining=0
+        }
         
-        txtPaymentUIDisplay.text = "CANCELLING TRANSACTION"
-        doAbort(abortReason: "Transaction Cancel")
     }
     
     @IBAction func btnDoLogin(_ sender: UIButton) {
@@ -241,10 +271,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     @IBAction func btnDoPayment(_ sender: UIButton) {
         initValues()
+        showReceipt(doShow: false)
         wvReceipt.loadHTMLString("", baseURL: Bundle.main.bundleURL)
         btnAbort.isEnabled = true
         currentTransaction = "Payment"
-        txtErrorCondition.text = ""
+//        txtErrorCondition.text = ""
+        clearResults()
         let requestedAmount = NSDecimalNumber(string: txtRequestedAmount.text)
         let tipAmount = NSDecimalNumber(string: txtTipAmount.text)
         self.doPayment(paymentType: "Normal", requestedAmount: requestedAmount, tipAmount: tipAmount)
@@ -252,10 +284,10 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     @IBAction func btnDoRefund(_ sender: UIButton) {
         currentTransaction = "Payment"
-        wvReceipt.loadHTMLString("", baseURL: Bundle.main.bundleURL)
+        //wvReceipt.loadHTMLString("", baseURL: Bundle.main.bundleURL)
         let requestedAmount = NSDecimalNumber(string: txtRequestedAmount.text)
         let tipAmount = NSDecimalNumber(string: txtResultTipAmount.text)
-        txtErrorCondition.text = ""
+        clearResults()
         self.doPayment(paymentType: "Refund", requestedAmount: requestedAmount, tipAmount: tipAmount)
         
     }
@@ -263,6 +295,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     func doTransactionStatus() {
         currentTransaction = "TransactionStatus"
         transactionStatusRequestCount+=1
+        showReceipt(doShow: false)
         if (secondsRemaining > 0)
         {
             inErrorHandling = true
@@ -271,7 +304,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             btnLogin.isEnabled = false
             btnPurchase.isEnabled = false
             btnRefund.isEnabled = false
-            btnAbort.isHidden=true
+            //btnAbort.isHidden=true //still showing
             
             currentTransactionServiceID = UUID().uuidString
             fusionClient.messageHeader?.messageCategory = "TransactionStatus"
@@ -296,15 +329,13 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             print("pinning required")
             return
         }
-            
+        clearResults()
         currentTransactionServiceID = UUID().uuidString
         let dateFormat = DateFormatter()
         dateFormat.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
             
         fusionClient.messageHeader?.serviceID = currentTransactionServiceID
         fusionClient.messageHeader?.messageCategory = "Login"
-        fusionClient.messageHeader?.poiID = fusionCloudConfig.poiID //van remove
-        fusionClient.messageHeader?.saleID = fusionCloudConfig.saleID //van remove
                 
         let loginRequest = LoginRequest()
             loginRequest.dateTime = Date()
@@ -392,13 +423,6 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                     saleItem1.unitPrice = 42.50
                     saleItem1.productLabel = "NVIDIA GEFORCE RTX 3090"
         
-                if(paymentBrands.count>0){
-                let transactionConditions = TransactionConditions()
-                    transactionConditions.allowedPaymentBrands = paymentBrands
-                    
-                    paymentTransaction.transactionConditions = transactionConditions
-                }
-        
                 paymentTransaction.amountsReq = amountsReq
                 paymentTransaction.saleItem = [saleItem1]
             
@@ -421,7 +445,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
 //                      request.timeoutInterval = 10
 //                      socket = WebSocket(request: request)
 //                      socket.delegate = self
-//                      socket.connect()
+//                      socket.connect()ß
 //    }
 //
     
@@ -432,10 +456,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
        switch event {
        case .connected(_):
            isConnected = true
+           //logErrorMessage (errorMessage: "Connected!")
        case .disconnected(_, _):
            isConnected = false
        case .text(let string):
            receiverDelegate?.dataReceive(response: string)
+           isConnected=true
        case .binary(_):
            break
        case .viabilityChanged(_):
@@ -446,12 +472,28 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
            isConnected = false
        case .error(let error):
            isConnected = false
+           print("here")
            handleError(error)
        case .pong(_):
            break;
        case .ping(_):
            break;
        }
+        // Detect if websocket is disconnected
+        if !isConnected{
+            if !inErrorHandling{
+                logErrorMessage (errorMessage: "Connection lost! Reconnecting...")
+                secondsRemaining = 0
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) { [self] in
+                if self.secondsRemaining>0{
+                    initConfig()
+                    socket.delegate = self
+                    socket.connect()
+                    self.doTransactionStatus()
+                }
+            }
+        }
     }
     
 
@@ -463,11 +505,11 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     func handleError(_ error: Error?) {
        if let e = error as? WSError {
-           print("websocket encountered an WS-error: \(e.message)")
+           print("websocket encountered an WS-error --check: \(e.message)")
        } else if let e = error {
-           print("websocket encountered an error: \(e.localizedDescription)")
+           print("websocket encountered an error--check: \(e.localizedDescription)")
        } else {
-           print("websocket encountered an error")
+           print("websocket encountered an error--check")
        }
     }
     
@@ -557,17 +599,18 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         }
         catch is MacValidation {
             print("Incorrect MAC")
-            txtErrorCondition.text = "Incorrect MAC"
+            logErrorMessage(errorMessage: "Incorrect MAC --ignored")
         }
         catch {
             print("OTHER ERROR")
-            txtErrorCondition.text = "Other parsing error"
+            logErrorMessage(errorMessage: "Other parsing error --ignored")
         }
 
     }
     
     func handleLoginResponse(messageHeader: MessageHeader, loginResponse: LoginResponse) {
         var enableButtons = true
+        showReceipt(doShow: false)
         if(messageHeader.serviceID != currentTransactionServiceID){
             incorrectValue = messageHeader.serviceID
             isIncorrectServiceID = true
@@ -585,9 +628,11 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             self.btnRefund.isEnabled = enableButtons
         }
         btnLogin.isEnabled = true
+        stopTimer()
     }
     
     func handleDisplayRequest(messageHeader: MessageHeader, displayRequest: DisplayRequest) {
+        showReceipt(doShow: false)
         if(messageHeader.serviceID != currentTransactionServiceID){
             print("ignoring incorrect service id display request")
             incorrectValue = messageHeader.serviceID
@@ -609,24 +654,38 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             isIncorrectServiceID=true
             return
         }
+        showReceipt(doShow: true)
         // Format decimal as currency
         let numberFormatter = NumberFormatter()
         numberFormatter.maximumFractionDigits = 2
         numberFormatter.minimumFractionDigits = 2
         numberFormatter.currencyCode = "AUD"
         numberFormatter.numberStyle = .currency
-
+        
+        let paymentResult = paymentResponse.paymentResult ?? nil
+        let cardData = paymentResponse.paymentResult?.paymentInstrumentData?.cardData ?? nil
         
         let authorizedAmount = paymentResponse.paymentResult?.amountsResp?.authorizedAmount ?? 0;
         let tipAmount = paymentResponse.paymentResult?.amountsResp?.tipAmount ?? 0;
         let surchargeAmount = paymentResponse.paymentResult?.amountsResp?.surchargeAmount ?? 0;
         let maskedPAN = paymentResponse.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
         let success = paymentResponse.response?.isSuccess() == true;
+        let cardAccount = paymentResult?.paymentInstrumentData?.cardData?.getAccount()
+        let paymentBrand = cardData?.getPaymentBrand()
+        let entryMode = cardData?.entryMode ?? "not specified"
+        let paymentInstrumentType = paymentResult?.paymentInstrumentData?.paymentInstrumentType ?? "not specified"
+        let transactionId = paymentResult?.paymentAcquirerData?.acquirerTransactionID?.transactionID ?? "not specified"
+        let approvalCode = paymentResult?.paymentAcquirerData?.approvalCode ?? "not specified"
+        
         let receiptHTML = (paymentResponse.paymentReceipt?[0].getReceiptAsPlainText())
         
-
         
         if(success) {
+            //Internal validation for masked pan + payment brand validation
+            let isValidCard = FusionCloud.isCardValid(cardNumber: maskedPAN, cardBrand: paymentBrand ?? "unknown")
+            if !isValidCard.isValid{
+                print(Date().ISO8601Format() + "\n\n WARNING: \(isValidCard.errorMessage)")
+            }
             txtPaymentResult.backgroundColor = UIColor.systemGreen;
             txtPaymentResult.textColor = UIColor.white;
             txtPaymentResult.text = "PAYMENT SUCCESSFUL"
@@ -638,21 +697,28 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             txtPaymentResult.textColor = UIColor.white;
             txtPaymentResult.text = "PAYMENT CANCELLED"
             txtPaymentUIDisplay.text=""
+            txtErrorCondition.text = paymentResponse.response?.errorCondition
         }
         else {
             txtPaymentResult.backgroundColor = UIColor.systemRed;
             txtPaymentResult.textColor = UIColor.white;
             txtPaymentResult.text = "PAYMENT FAILED"
             txtPaymentUIDisplay.text=""
-            txtErrorCondition.text = paymentResponse.response?.additionalResponse
+            txtErrorCondition.text = paymentResponse.response?.errorCondition
         }
         
         txtResultAuthorizedAmount.text = numberFormatter.string(from: authorizedAmount);
         txtResultTipAmount.text = numberFormatter.string(from: tipAmount);
         txtResultSurchargeAmount.text = numberFormatter.string(from: surchargeAmount);
         txtResultMaskedPAN.text = maskedPAN;
+        txtCardAccount.text = cardAccount
+        txtPaymentBrand.text = paymentBrand
+        txtEntryMode.text = entryMode
+        txtPaymentType.text = paymentInstrumentType
+        txtTransactionID.text = transactionId
+        txtApprovalCode.text = approvalCode
+        
         wvReceipt.loadHTMLString(receiptHTML ?? "", baseURL: Bundle.main.bundleURL)
-//            wvReceipt.reload()
         
         //Enable other buttons, hide abort
         btnAbort.isHidden=true
@@ -671,8 +737,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             return
         }
         
+        let pResponse = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse ?? nil
+        let pResult = pResponse?.paymentResult ?? nil
+        let cardData = pResult?.paymentInstrumentData?.cardData ?? nil
+        
         let success = transactionStatusResponse.response!.isSuccess() == true;
-        let errorCondition = transactionStatusResponse.response?.errorCondition ?? transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.response?.errorCondition
+        let errorCondition = transactionStatusResponse.response?.errorCondition ?? pResponse?.response?.errorCondition
         
         
         // Handle transactionStatusResponse
@@ -682,27 +752,50 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         numberFormatter.currencyCode = "AUD"
         numberFormatter.numberStyle = .currency
         
-        let amountsResp = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.paymentResult?.amountsResp
+        let amountsResp = pResponse?.paymentResult?.amountsResp
         
         let authorizedAmount = amountsResp?.authorizedAmount ?? 0;
         let tipAmount = amountsResp?.tipAmount ?? 0;
         let surchargeAmount = amountsResp?.surchargeAmount ?? 0;
-        let maskedPAN = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse?.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
-        let receiptHTML = transactionStatusResponse.repeatedMessageResponse?.repeatedResponseMessageBody?.paymentResponse!.paymentReceipt?[0].getReceiptAsPlainText()!
+        
+        
+        
+        let maskedPAN = pResponse?.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
+        let cardAccount = cardData?.getAccount()
+        let paymentBrand = cardData?.getPaymentBrand()
+        let entryMode = cardData?.entryMode ?? "not specified"
+        let paymentInstrumentType = pResult?.paymentInstrumentData?.paymentInstrumentType ?? "not specified"
+        let transactionId = pResult?.paymentAcquirerData?.acquirerTransactionID?.transactionID ?? "not specified"
+        let approvalCode = pResult?.paymentAcquirerData?.approvalCode ?? "not specified"
+        let receiptHTML = pResponse?.paymentReceipt?[0].getReceiptAsPlainText()!
         
         
         txtResultAuthorizedAmount.text = numberFormatter.string(from: authorizedAmount);
         txtResultTipAmount.text = numberFormatter.string(from: tipAmount);
         txtResultSurchargeAmount.text = numberFormatter.string(from: surchargeAmount);
         txtResultMaskedPAN.text = maskedPAN;
+        txtCardAccount.text = cardAccount
+        txtPaymentBrand.text = paymentBrand
+        txtEntryMode.text = entryMode
+        txtPaymentType.text = paymentInstrumentType
+        txtTransactionID.text = transactionId
+        txtApprovalCode.text = approvalCode
+        
         
         if(success && errorCondition==nil) {
+            //Internal validation for masked pan + payment brand validation
+            let isValidCard = FusionCloud.isCardValid(cardNumber: maskedPAN, cardBrand: paymentBrand ?? "Unknown" )
+            if !isValidCard.isValid{
+                print("WARNING: \(isValidCard.errorMessage)")
+            }
+            
+            showReceipt(doShow: true)
             if(currentPaymentServiceId != transactionStatusResponse.repeatedMessageResponse?.messageHeader!.serviceID){
                 incorrectValue = transactionStatusResponse.repeatedMessageResponse?.messageHeader!.serviceID ?? "NULL" + "--payment service id"
                 isIncorrectServiceID=true
                 return
             }
-            txtPaymentResult.backgroundColor = UIColor.systemGreen;
+            txtPaymentResult.backgroundColor = UIColor.systemMint; //UIColor.systemGreen;
             txtPaymentResult.textColor = UIColor.white;
             txtPaymentResult.text = "PAYMENT SUCCESSFUL"
             txtPaymentUIDisplay.text=""
@@ -716,11 +809,13 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         else {
             
             if(errorCondition=="InProgress" && secondsRemaining>0){
+                showReceipt(doShow: false)
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
                     self.doTransactionStatus()
 //                    inErrorHandling = false
                 }
             } else if(errorCondition=="Cancel"){
+                showReceipt(doShow: true)
                 txtPaymentResult.backgroundColor = UIColor.systemYellow;
                 txtPaymentResult.textColor = UIColor.white;
                 txtPaymentResult.text = "PAYMENT CANCELLED"
@@ -732,11 +827,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 btnLogin.isEnabled=true
             }
             else if (secondsRemaining>0){
+                showReceipt(doShow: true)
                 txtPaymentResult.backgroundColor = UIColor.systemRed;
                 txtPaymentResult.textColor = UIColor.white;
                 txtPaymentResult.text = "PAYMENT FAILED"
                 txtPaymentUIDisplay.text=""
-                txtErrorCondition.text = transactionStatusResponse.response!.additionalResponse
+                txtErrorCondition.text = transactionStatusResponse.response!.errorCondition
                 stopTimer()
                 btnAbort.isHidden=true
                 btnPurchase.isEnabled=true
@@ -750,6 +846,12 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     func appendLog(content: String) {
         logs.append(contentsOf: Date().ISO8601Format() + " " + content + "\n\n")
+        self.txtLogs.text = logs
+    }
+    func logErrorMessage(errorMessage: String){
+        let content =
+        "------------------------------------------------------------\n------------------------------------------------------------\n \(errorMessage) \n------------------------------------------------------------\n------------------------------------------------------------"
+        logs.append(contentsOf: Date().ISO8601Format() + "\n" + content + "\n\n")
         self.txtLogs.text = logs
     }
     
