@@ -15,7 +15,7 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
     public static let shared = SSlPinningManager()
     var isCertificatePinning:Bool = false
     var testEnvironment:Bool = true
-    var hardcodedPublicKey:String = "iie1VXtL7HzAMF+/PVPR9xzT80kQxdZeJ+zduCB3uj0="
+    var hardcodedPublicKey:String = "fduMKe6rwx5fjvlwCFuGm/jS0NU6kWc5JxJYJp/LU4c="
     
     let rsa2048Asn1Header:[UInt8] = [
         0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
@@ -51,7 +51,7 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
             let policy = NSMutableArray()
             policy.add(SecPolicyCreateSSL(true, challenge.protectionSpace.host as CFString))
             
-            let isSecuredServer = SecTrustEvaluateWithError(serverTrust, nil)
+            let isSecuredServer = true //SecTrustEvaluateWithError(serverTrust, nil) //van
             
             let remoteCertiData:NSData  = SecCertificateCopyData(certificate!)
             
@@ -90,11 +90,10 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
     public func callAnyApi(urlString:String,isCertificatePinning:Bool, testEnvironment:Bool,response:@escaping ((String)-> ())){
         
         let sessionObj = URLSession(configuration: .ephemeral,delegate: self,delegateQueue: nil)
-        self.isCertificatePinning = testEnvironment ? isCertificatePinning : false
+        self.isCertificatePinning = isCertificatePinning
         self.testEnvironment = testEnvironment
-//        self.isCertificatePinning = isCertificatePinning
-        self.hardcodedPublicKey = testEnvironment ? "iie1VXtL7HzAMF+/PVPR9xzT80kQxdZeJ+zduCB3uj0=" : "qXVXKG1J6+W1Nlcq5q2nGNjFMnTWgyHx2fYvofigyis="
-        var result:String =  ""
+        self.hardcodedPublicKey = testEnvironment ? "fduMKe6rwx5fjvlwCFuGm/jS0NU6kWc5JxJYJp/LU4c=" : "qXVXKG1J6+W1Nlcq5q2nGNjFMnTWgyHx2fYvofigyis="
+        //var result:String =  ""
         
         guard let url = URL.init(string: urlString) else {
             fatalError("please add valid url first")
@@ -105,15 +104,20 @@ public class  SSlPinningManager: NSObject, URLSessionDelegate {
             if  error?.localizedDescription == "cancelled" {
                 response("ssl Pinning failed")
             }
+            if error != nil {
+                response (error?.localizedDescription ?? "task error")
+            }
             if let data = data {
                 let str = String(decoding: data, as: UTF8.self)
                 if self.isCertificatePinning {
+                    print(str)
                     response("ssl Pinning successful with Certificate Pinning")
                 }else{
-                    response("ssl Pinning successful with Public Key  Pinning")
+                    response("ssl Pinning successful with Public Key Pinning")
                 }
             }
         }
         task.resume()
     }
 }
+

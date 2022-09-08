@@ -3,15 +3,11 @@
 //  TestAppDM
 
 import UIKit
-import Alamofire
-import Starscream
-import ObjectMapper
 import SVProgressHUD
 import FusionCloud
 import WebKit
 
-class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
-
+class ViewController: UIViewController, FusionClientDelegate {
     @IBOutlet weak var vwRequest: UIView!
     @IBOutlet weak var vwLoading: UIView!
     @IBOutlet weak var vwResult: UIView!
@@ -63,7 +59,6 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     var currentTransaction: String?
     var incorrectValue: String?
     var warningMessage: String?
-//    var paymentBrands = [String]()
     
     var timoutLimit = 0
     var ErrorHandlingLimit = 0
@@ -71,7 +66,6 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     //for testing
     var transactionStatusRequestCount = 0
-    
     
     func clearResults(){
         txtResultAuthorizedAmount.text = ""
@@ -83,6 +77,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         txtEntryMode.text = ""
         txtPaymentType.text = ""
         txtTransactionID.text = ""
+        txtApprovalCode.text = ""
         
         txtErrorCondition.text = ""
         inErrorHandling=false
@@ -93,8 +88,8 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         ErrorHandlingLimit = 90 //90 seconds
         
         inLogin = false
-        //initValues = false
         isIncorrectServiceID = false
+        secondsRemaining = 0
         txtTimer.text = "0"
         transactionStatusRequestCount = 0
         warningMessage = nil
@@ -105,10 +100,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     var timer = Timer()
     
-    /** Do call after sending message to Socket*/
     func timeoutStart(){
-//        timer = Timer()
-        
         self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
         imgLoading.isHidden=false
         imgLoading.startAnimating()
@@ -124,11 +116,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                         self.doTransactionStatus()
                     }
                 }
-                
-                print("Received an incorrect service ID in transaction: \(String(describing: currentTransaction ?? "NULL"))")
-                print("\(currentTransactionServiceID ?? "NULL") -- Current Transaction Service ID")
-                print("\(incorrectValue ?? "NULL") -- Incorrect Service ID")
-                logErrorMessage(errorMessage: "incorrect service ID -- ignored")
+                txtLogs.text.append("\nReceived an incorrect service ID in transaction: \(String(describing: currentTransaction ?? "NULL"))")
                 isIncorrectServiceID=false
             }
             secondsRemaining -= 1
@@ -177,27 +165,33 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         initValues()
     }
     
-    var receiverDelegate: FusionCloudDelegate?
-    
-    var socket: WebSocket!
-    var isConnected = true
-    let server = WebSocketServer()
-    var isCertPin = false
-    let crypto = Crypto()
-    var session: Session?
-    
+//    let testEnvironment = false
+//    let fusionCloudConfig = FusionCloudConfig(testEnvironmentui: false)
+    let testEnvironment = true
     let fusionCloudConfig = FusionCloudConfig(testEnvironmentui: true)
-//    let fusionCloudConfig = FusionCloudConfig(testEnvironmentui: false) //FOR PRODUCTION ONLY
+    
+    
     var fusionClient = FusionClient()
     
     var logs: String = ""
-
+    
     public func initConfig() {
-        // Construct configurabation helper
-        fusionCloudConfig.saleID = "<<SALE ID>>"
-        fusionCloudConfig.poiID = "<<POI ID>>"
+        fusionCloudConfig.allowSelfSigned = true
+        //van update this
+        fusionCloudConfig.saleID = testEnvironment ? "VA POS"  : "DMGProductionVerificationTest2"
+        fusionCloudConfig.poiID = testEnvironment ? "DMGVA001" : "E3330010"
+        
+        fusionCloudConfig.providerIdentification = testEnvironment ? "Company A" : "H_L"
+        fusionCloudConfig.applicationName = testEnvironment ? "POS Retail" : "Exceed"
+        fusionCloudConfig.softwareVersion = testEnvironment ? "01.00.00" : "9.0.0.0"
+        fusionCloudConfig.certificationCode = testEnvironment ? "98cf9dfc-0db7-4a92-8b8cb66d4d2d7169" : "01c99f18-7093-4d77-b6f6-2c762c8ed698"
+        
+        /*per pinpad*/
+        fusionCloudConfig.kekValue = testEnvironment ? "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21" : "ba92ab29e9918943167325f4ea1f5d9b5ee679ea89a82f2c"
+        
         self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
-        socket = fusionClient.socket
+        fusionClient.fusionClientDelegate = self
+        
         
     }
     
@@ -214,9 +208,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         txtLogs.isEditable = false
         
         initConfig()
-        socket.delegate = self
-        socket.connect()
-        self.receiverDelegate = self
+
         
         btnAbort.isHidden=true
         imgLoading.isHidden=true;
@@ -229,7 +221,6 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     @IBAction func btnClear(_ sender: Any) {
         self.txtLogs.text=""
-        self.logs = ""
     }
     
     
@@ -257,16 +248,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
     
     @IBAction func btnDoLogin(_ sender: UIButton) {
         btnLogin.isEnabled = false
-        SSlPinningManager.shared.callAnyApi(urlString: fusionCloudConfig.serverDomain ?? "",
-                                            isCertificatePinning: true,
-                                            testEnvironment: fusionCloudConfig.testEnvironment ){
-            (response) in DispatchQueue.main.async {
-                if response.contains("successful") {
-                    self.isCertPin = true
-                    self.doLogin()
-                    }
-                }
-            }
+        self.doLogin()
     }
     
     @IBAction func btnDoPayment(_ sender: UIButton) {
@@ -275,7 +257,6 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         wvReceipt.loadHTMLString("", baseURL: Bundle.main.bundleURL)
         btnAbort.isEnabled = true
         currentTransaction = "Payment"
-//        txtErrorCondition.text = ""
         clearResults()
         let requestedAmount = NSDecimalNumber(string: txtRequestedAmount.text)
         let tipAmount = NSDecimalNumber(string: txtTipAmount.text)
@@ -318,17 +299,15 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
             messageReference.messageCategory = "Payment"
             
             transactionStatusRequest.messageReference = messageReference
-            //add catch here if sendmessage fails
+            
             fusionClient.sendMessage(requestBody: transactionStatusRequest, type: "TransactionStatusRequest")
         }
     }
     
     func doLogin() {
         currentTransaction = "Login"
-        if (!self.isCertPin) {
-            print("pinning required")
-            return
-        }
+        
+        
         clearResults()
         currentTransactionServiceID = UUID().uuidString
         let dateFormat = DateFormatter()
@@ -358,6 +337,8 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         inLogin = true
         timeoutStart()
         fusionClient.sendMessage(requestBody: loginRequest, type: "LoginRequest")
+
+        print(fusionClient.logs)
     }
     
     func doAbort(abortReason: String) {
@@ -438,217 +419,9 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         secondsRemaining=timoutLimit
         timeoutStart()
     }
-    
-//    /** WebSocket Delegate functions */
-//    func startSocketConnection(){
-//        var request = URLRequest(url: URL(string: fusionCloudConfig.serverDomain!)!)
-//                      request.timeoutInterval = 10
-//                      socket = WebSocket(request: request)
-//                      socket.delegate = self
-//                      socket.connect()ß
-//    }
-//
-    
-    
-    ///  Implementation of Starscream WebSocketDelegate
-    /// - Parameter response: content received on the websocket
-    func didReceive(event: WebSocketEvent, client: WebSocket) {
-       switch event {
-       case .connected(_):
-           isConnected = true
-           //logErrorMessage (errorMessage: "Connected!")
-       case .disconnected(_, _):
-           isConnected = false
-       case .text(let string):
-           receiverDelegate?.dataReceive(response: string)
-           isConnected=true
-       case .binary(_):
-           break
-       case .viabilityChanged(_):
-           break
-       case .reconnectSuggested(_):
-           break
-       case .cancelled:
-           isConnected = false
-       case .error(let error):
-           isConnected = false
-           print("here")
-           handleError(error)
-       case .pong(_):
-           break;
-       case .ping(_):
-           break;
-       }
-        // Detect if websocket is disconnected
-        if !isConnected{
-            if !inErrorHandling{
-                logErrorMessage (errorMessage: "Connection lost! Reconnecting...")
-                secondsRemaining = 0
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) { [self] in
-                if self.secondsRemaining>0{
-                    initConfig()
-                    socket.delegate = self
-                    socket.connect()
-                    self.doTransactionStatus()
-                }
-            }
-        }
-    }
-    
-
-    func dataReceive(response: String) {
-        print("rx---")
-        //print("\(response)")
-        parseResponse(str: response)
-    }
-    
-    func handleError(_ error: Error?) {
-       if let e = error as? WSError {
-           print("websocket encountered an WS-error --check: \(e.message)")
-       } else if let e = error {
-           print("websocket encountered an error--check: \(e.localizedDescription)")
-       } else {
-           print("websocket encountered an error--check")
-       }
-    }
-    
-    func disconnectSocket() {
-        if isConnected {
-            socket.disconnect()
-        } else {
-            socket.connect()
-        }
-    }
-
-    
-    func parseResponse(str: String) {
-        let strFormatted = str.data(using: .utf8)!.prettyPrintedJSONString!
-        appendLog(content: "\n\n Response \(strFormatted)")
+    func paymentResponseReceived(client: FusionClient, messageHeader: MessageHeader, paymentResponse: PaymentResponse) {
+        if inErrorHandling && secondsRemaining <= 0 { return }
         
-        let rc = SaleToPOI(JSONString: str)
-        do{
-            // validate security trailer
-            try crypto.validateSecurityTrailer(securityTrailer: (rc!.saleToPOIResponse?.securityTrailer ?? rc!.saleToPOIRequest?.securityTrailer)!, kek: fusionCloudConfig.kekValue!, raw: str)
-
-
-            // Message will be in saleToPOIRequest (for displays) or saleToPOIResponse (for all others)
-            let poiResp = rc?.saleToPOIResponse
-            let poiRequ = rc?.saleToPOIRequest
-            let mh = poiResp?.messageheader ?? poiRequ?.messageHeader
-            
-            // Validate response
-            if ((poiRequ == nil && poiResp == nil) || mh == nil ||
-                mh?.messageCategory == nil) {
-                appendLog(content: "Invalid response. Data == nil")
-                return
-            }
-            let acceptableResponse = [mh!.messageCategory, currentTransaction, "Display", "Abort"]
-            if(!acceptableResponse.contains(mh!.messageCategory))
-            {
-                print("ignoring response")
-                return
-            }
-            if(currentTransaction == "Abort" && mh!.messageCategory == "Display"){
-                print("ignoring display queue")
-                return
-            }
-            switch(mh!.messageCategory)
-            {
-            case "Login":
-                let r = poiResp?.loginResponse;
-                if(r == nil) {
-                    appendLog(content: "Invalid response. Payload == nil")
-                    return
-                }
-                if inLogin{
-                    handleLoginResponse(messageHeader: mh!, loginResponse: r!)
-                }
-               
-                break
-            case "Payment":
-                if !inErrorHandling && secondsRemaining > 0 {
-                    let r = poiResp?.paymentResponse;
-                    if(r == nil) {
-                        appendLog(content: "Invalid response. Payload == nil")
-                        return
-                    }
-                    
-                    handlePaymentResponse(messageHeader: mh!, paymentResponse: r!)
-                }
-                break
-            case "TransactionStatus":
-                let r = poiResp?.transactionStatusResponse;
-                if(r == nil) {
-                    appendLog(content: "Invalid response. Payload == nil")
-                    return
-                }
-                    handleTransactionStatusResponse(messageHeader: mh!, transactionStatusResponse: r!)
-                break
-            case "Display":
-                let r = poiRequ?.displayRequest;
-                if(r == nil) {
-                    appendLog(content: "Invalid response. Payload == nil")
-                    return
-                }
-                handleDisplayRequest(messageHeader: mh!, displayRequest: r!)
-                break
-            default:
-                appendLog(content: "Unknown message type: " + mh!.messageCategory!)
-            }
-        }
-        catch is MacValidation {
-            print("Incorrect MAC")
-            logErrorMessage(errorMessage: "Incorrect MAC --ignored")
-        }
-        catch {
-            print("OTHER ERROR")
-            logErrorMessage(errorMessage: "Other parsing error --ignored")
-        }
-
-    }
-    
-    func handleLoginResponse(messageHeader: MessageHeader, loginResponse: LoginResponse) {
-        var enableButtons = true
-        showReceipt(doShow: false)
-        if(messageHeader.serviceID != currentTransactionServiceID){
-            incorrectValue = messageHeader.serviceID
-            isIncorrectServiceID = true
-            inLogin=true
-            return
-        }
-        if (loginResponse.response?.result != "Success") {
-            enableButtons = false
-            appendLog(content: "Login error")
-        }
-        else{
-            txtPaymentUIDisplay.text = "LOGIN SUCCESSFUL"
-            self.btnPurchase.isEnabled = enableButtons
-            self.btnAbort.isEnabled = enableButtons
-            self.btnRefund.isEnabled = enableButtons
-        }
-        btnLogin.isEnabled = true
-        stopTimer()
-    }
-    
-    func handleDisplayRequest(messageHeader: MessageHeader, displayRequest: DisplayRequest) {
-        showReceipt(doShow: false)
-        if(messageHeader.serviceID != currentTransactionServiceID){
-            print("ignoring incorrect service id display request")
-            incorrectValue = messageHeader.serviceID
-            isIncorrectServiceID=true
-            return
-        }
-        txtPaymentUIDisplay.text = displayRequest.getCashierDisplayAsPlainText()
-        if (!inErrorHandling) {
-            stopTimer()
-            secondsRemaining = timoutLimit
-            timeoutStart()
-        }
-       
-    }
-    
-    func handlePaymentResponse(messageHeader: MessageHeader, paymentResponse: PaymentResponse) {
         if(messageHeader.serviceID != currentPaymentServiceId){
             incorrectValue = messageHeader.serviceID
             isIncorrectServiceID=true
@@ -727,10 +500,9 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
         btnLogin.isEnabled=true
         
         stopTimer()
-
     }
     
-    func handleTransactionStatusResponse(messageHeader: MessageHeader, transactionStatusResponse: TransactionStatusResponse) {
+    func transactionStatusResponseReceived(client: FusionClient, messageHeader: MessageHeader, transactionStatusResponse: TransactionStatusResponse) {
         if((messageHeader.serviceID != currentTransactionServiceID)){
             incorrectValue = messageHeader.serviceID
             isIncorrectServiceID=true
@@ -812,7 +584,6 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 showReceipt(doShow: false)
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
                     self.doTransactionStatus()
-//                    inErrorHandling = false
                 }
             } else if(errorCondition=="Cancel"){
                 showReceipt(doShow: true)
@@ -825,6 +596,7 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
                 btnPurchase.isEnabled=true
                 btnRefund.isEnabled=true
                 btnLogin.isEnabled=true
+                showReceipt(doShow: true)
             }
             else if (secondsRemaining>0){
                 showReceipt(doShow: true)
@@ -844,15 +616,102 @@ class ViewController: UIViewController , WebSocketDelegate, FusionCloudDelegate{
        
     }
     
-    func appendLog(content: String) {
-        logs.append(contentsOf: Date().ISO8601Format() + " " + content + "\n\n")
-        self.txtLogs.text = logs
+    func displayRequestReceived(client: FusionClient, messageHeader: MessageHeader, displayRequest: DisplayRequest) {
+
+        if(messageHeader.serviceID != currentTransactionServiceID){
+            //print("ignoring incorrect service id display request above")
+            incorrectValue = messageHeader.serviceID
+            isIncorrectServiceID=true
+            return
+        }
+        showReceipt(doShow: false)
+        txtPaymentUIDisplay.text = displayRequest.getCashierDisplayAsPlainText()
+        if (!inErrorHandling) {
+            stopTimer()
+            secondsRemaining = timoutLimit
+            timeoutStart()
+        }
     }
-    func logErrorMessage(errorMessage: String){
-        let content =
-        "------------------------------------------------------------\n------------------------------------------------------------\n \(errorMessage) \n------------------------------------------------------------\n------------------------------------------------------------"
-        logs.append(contentsOf: Date().ISO8601Format() + "\n" + content + "\n\n")
-        self.txtLogs.text = logs
+    ///Leaving Event Notification for logs
+    func eventNotificationReceived(client: FusionClient, messageHeader: MessageHeader, eventNotification: EventNotification) {
+        txtLogs.text.append("Ignoring Event Notification above\r\n")
+    }
+    
+    func reconcilationResponseReceived(client: FusionClient, messageHeader: MessageHeader, reconcilationResponse: ReconciliationResponse) {
+        print("reconcilationResponseReceived!")
+    }
+    
+    func cardAcquisitionResponseReceived(client: FusionClient, messageHeader: MessageHeader, cardAcquisitionResponse: CardAcquisitionResponse) {
+        print("cardAcquisitionResponseReceived!")
+    }
+    
+    func logoutResponseResponseReceived(client: FusionClient, messageHeader: MessageHeader, logoutResponse: LogoutResponse) {
+        print("logoutResponseResponseReceived!")
+    }
+    
+    func socketConnected(client: FusionClient) {
+        txtLogs.text.append("\r\nSocket Connected")
+        print("Socket Connected")
+        if inErrorHandling {
+            self.doTransactionStatus()
+        }
+    }
+    
+    func socketDisconnected(client: FusionClient) {
+        if !inErrorHandling{
+            txtLogs.text.append("\r\nConnection lost! Reconnecting...")
+            secondsRemaining = 0
+        }
+        //will try to reconnect to socket
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) { [self] in
+            if self.secondsRemaining>0{
+                initConfig()
+            }
+        }
+    }
+    
+    func socketReceived(client: FusionClient, data: String) {
+        let strFormatted = data.data(using: .utf8)!.prettyPrintedJSONString!
+        txtLogs.text.append(contentsOf: "\r\n\r\n\(Date().ISO8601Format()) \(strFormatted as String) \n\n")
+    }
+    
+    func socketError(client: FusionClient, error: Error) {
+        print("socket error")
+        //stopTimer()
+    }
+    
+    func logData(client: FusionClient, type: String, data: String) {
+        print("logtype:\(type)")
+        print("details:\(data)")
+    }
+    
+    func loginResponseReceived(client: FusionClient, messageHeader: MessageHeader, loginResponse: LoginResponse) {
+        if !inLogin {
+            txtLogs.text.append("\r\nIgnoring Login Response above")
+            return
+        }
+        var enableButtons = true
+        showReceipt(doShow: false)
+        if(messageHeader.serviceID != currentTransactionServiceID){
+            incorrectValue = messageHeader.serviceID
+            isIncorrectServiceID = true
+            inLogin=true
+            return
+        }
+        if (loginResponse.response?.result != "Success") {
+            enableButtons = false
+            print("Login Error!")
+            txtPaymentUIDisplay.text = "LOGIN FAILED"
+            btnLogin.isEnabled = true
+        }
+        else{
+            txtPaymentUIDisplay.text = "LOGIN SUCCESSFUL"
+            self.btnPurchase.isEnabled = enableButtons
+            self.btnAbort.isEnabled = enableButtons
+            self.btnRefund.isEnabled = enableButtons
+        }
+        btnLogin.isEnabled = true
+        stopTimer()
     }
     
 }
