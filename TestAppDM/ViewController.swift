@@ -178,17 +178,17 @@ class ViewController: UIViewController, FusionClientDelegate {
     
     public func initConfig() {
         fusionCloudConfig.allowSelfSigned = true
-        //van update this
-        fusionCloudConfig.saleID = testEnvironment ? "VA POS"  : "DMGProductionVerificationTest2"
-        fusionCloudConfig.poiID = testEnvironment ? "DMGVA001" : "E3330010"
+        ///TO BE PROVIDED BY DATAMESH
+        fusionCloudConfig.saleID = testEnvironment ? "<<SALE ID - DEV>>"  : "<<SALE ID - PROD>>"
+        fusionCloudConfig.poiID = testEnvironment ? "<<POI ID - DEV>>" : "<<POI ID - PROD>>"
         
-        fusionCloudConfig.providerIdentification = testEnvironment ? "Company A" : "H_L"
-        fusionCloudConfig.applicationName = testEnvironment ? "POS Retail" : "Exceed"
-        fusionCloudConfig.softwareVersion = testEnvironment ? "01.00.00" : "9.0.0.0"
-        fusionCloudConfig.certificationCode = testEnvironment ? "98cf9dfc-0db7-4a92-8b8cb66d4d2d7169" : "01c99f18-7093-4d77-b6f6-2c762c8ed698"
+        fusionCloudConfig.providerIdentification = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+        fusionCloudConfig.applicationName = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+        fusionCloudConfig.softwareVersion = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+        fusionCloudConfig.certificationCode = testEnvironment ? "<<DEV>>" : "<<PROD>>"
         
         /*per pinpad*/
-        fusionCloudConfig.kekValue = testEnvironment ? "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21" : "ba92ab29e9918943167325f4ea1f5d9b5ee679ea89a82f2c"
+        fusionCloudConfig.kekValue = testEnvironment ? "<<DEV>>" : "<<PROD>>"
         
         self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
         fusionClient.fusionClientDelegate = self
