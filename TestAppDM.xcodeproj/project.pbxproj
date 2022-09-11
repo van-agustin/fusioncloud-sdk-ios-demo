@@ -10,10 +10,7 @@
 		AB49909528A5FF4A00BA4F59 /* FusionCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB49909428A5FF4A00BA4F59 /* FusionCloud.framework */; };
 		AB49909628A5FF4A00BA4F59 /* FusionCloud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AB49909428A5FF4A00BA4F59 /* FusionCloud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AB8B828528A21E8300982344 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989227CA91F900324851 /* ViewController.swift */; };
-		ABAA3ACA28BF4388007EF611 /* prodcert.cer in Resources */ = {isa = PBXBuildFile; fileRef = ABAA3AC928BF4388007EF611 /* prodcert.cer */; };
 		BD8275CE22FFF1A9EA188FE4 /* Pods_TestAppDM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 293CEAEF73F4F0A38B47777F /* Pods_TestAppDM.framework */; };
-		D67A87D727CB37040021C094 /* SSLPinningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D67A87D027CB37030021C094 /* SSLPinningManager.swift */; };
-		D67A87DA27CB37040021C094 /* devcert.cer in Resources */ = {isa = PBXBuildFile; fileRef = D67A87D327CB37040021C094 /* devcert.cer */; };
 		D6A6988F27CA91F900324851 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6988E27CA91F900324851 /* AppDelegate.swift */; };
 		D6A6989127CA91F900324851 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A6989027CA91F900324851 /* SceneDelegate.swift */; };
 		D6A6989627CA91F900324851 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6A6989427CA91F900324851 /* Main.storyboard */; };
@@ -60,11 +57,8 @@
 		293CEAEF73F4F0A38B47777F /* Pods_TestAppDM.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestAppDM.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8EF3CA99A0136A68F7A4378 /* Pods-TestAppDM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppDM.release.xcconfig"; path = "Target Support Files/Pods-TestAppDM/Pods-TestAppDM.release.xcconfig"; sourceTree = "<group>"; };
 		AB49909428A5FF4A00BA4F59 /* FusionCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FusionCloud.framework; sourceTree = "<group>"; };
-		ABAA3AC928BF4388007EF611 /* prodcert.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = prodcert.cer; sourceTree = "<group>"; };
 		C789A643202DD93F5EBDA952 /* Pods-TestAppDM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppDM.debug.xcconfig"; path = "Target Support Files/Pods-TestAppDM/Pods-TestAppDM.debug.xcconfig"; sourceTree = "<group>"; };
 		D6712AB028430FB1001D123C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		D67A87D027CB37030021C094 /* SSLPinningManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSLPinningManager.swift; sourceTree = "<group>"; };
-		D67A87D327CB37040021C094 /* devcert.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = devcert.cer; sourceTree = "<group>"; };
 		D6A6988B27CA91F900324851 /* TestAppDM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestAppDM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6A6988E27CA91F900324851 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D6A6989027CA91F900324851 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -117,16 +111,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D67A87CC27CB36F90021C094 /* Utility */ = {
-			isa = PBXGroup;
-			children = (
-				ABAA3AC928BF4388007EF611 /* prodcert.cer */,
-				D67A87D027CB37030021C094 /* SSLPinningManager.swift */,
-				D67A87D327CB37040021C094 /* devcert.cer */,
-			);
-			path = Utility;
-			sourceTree = "<group>";
-		};
 		D6A6988227CA91F900324851 = {
 			isa = PBXGroup;
 			children = (
@@ -153,7 +137,6 @@
 		D6A6988D27CA91F900324851 /* TestAppDM */ = {
 			isa = PBXGroup;
 			children = (
-				D67A87CC27CB36F90021C094 /* Utility */,
 				D6A6988E27CA91F900324851 /* AppDelegate.swift */,
 				D6A6989027CA91F900324851 /* SceneDelegate.swift */,
 				D6A6989227CA91F900324851 /* ViewController.swift */,
@@ -302,8 +285,6 @@
 			files = (
 				D6A6989E27CA91F900324851 /* LaunchScreen.storyboard in Resources */,
 				D6A6989B27CA91F900324851 /* Assets.xcassets in Resources */,
-				D67A87DA27CB37040021C094 /* devcert.cer in Resources */,
-				ABAA3ACA28BF4388007EF611 /* prodcert.cer in Resources */,
 				D6A6989627CA91F900324851 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -373,7 +354,6 @@
 			files = (
 				AB8B828528A21E8300982344 /* ViewController.swift in Sources */,
 				D6A6989927CA91F900324851 /* TestAppDM.xcdatamodeld in Sources */,
-				D67A87D727CB37040021C094 /* SSLPinningManager.swift in Sources */,
 				D6A6988F27CA91F900324851 /* AppDelegate.swift in Sources */,
 				D6A6989127CA91F900324851 /* SceneDelegate.swift in Sources */,
 			);
@@ -466,6 +446,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -527,6 +508,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -553,9 +535,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84QZTGCEL5;
+				DEVELOPMENT_TEAM = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -577,6 +560,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dmtest.TestAppDMUpdate2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -589,9 +573,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84QZTGCEL5;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -612,6 +597,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dmtest.TestAppDMUpdate2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
