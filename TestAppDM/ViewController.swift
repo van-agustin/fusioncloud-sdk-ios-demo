@@ -181,7 +181,7 @@ class ViewController: UIViewController, FusionClientDelegate {
         ///TO BE PROVIDED BY DATAMESH
         fusionCloudConfig.saleID = testEnvironment ? "<<SALE ID - DEV>>"  : "<<SALE ID - PROD>>"
         fusionCloudConfig.poiID = testEnvironment ? "<<POI ID - DEV>>" : "<<POI ID - PROD>>"
-                
+        
         fusionCloudConfig.providerIdentification = testEnvironment ? "<<DEV>>" : "<<PROD>>"
         fusionCloudConfig.applicationName = testEnvironment ? "<<DEV>>" : "<<PROD>>"
         fusionCloudConfig.softwareVersion = testEnvironment ? "<<DEV>>" : "<<PROD>>"
