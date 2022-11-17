@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/FusionCloud-Swift.h</key>
 		<data>
-		iNAdAH0QA/+qp9tsGrgo2beymoE=
+		h7agdKZKsLVUhUkHfEnh1M5GOLA=
 		</data>
 		<key>Headers/FusionCloud.h</key>
 		<data>
@@ -14,11 +14,11 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		5WYyopA4wReV5ZXhC8w42TaSFOI=
+		3YJdfhtYYc4evKnSf90Y1uOHGPI=
 		</data>
 		<key>Modules/FusionCloud.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		+RTVHhrVsx5e8IX/GLu2At/YFrI=
+		I/+eLoTDUEZ3QZ3uNeavaLaDVn8=
 		</data>
 		<key>Modules/FusionCloud.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -26,7 +26,7 @@
 		</data>
 		<key>Modules/FusionCloud.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		xOsZGxT8AGdZlCL6Lq8yePPleog=
+		Rwp7Z0V4J75YQbb9pjtgfwss280=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -43,7 +43,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			HqBLhidXAKQ6H6PDGjlG+W8Ake9MOT3uUwow9QUrUTo=
+			X/so263AstAU+rMVY0J3zGN8VEL+UIksDaCBHIUm/ug=
 			</data>
 		</dict>
 		<key>Headers/FusionCloud.h</key>
@@ -57,7 +57,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			THhDf9dvmmcr8XFDO13biCe+gChalbK793JwCg1YZ8c=
+			6lIL2fYU4QRJXBgIwAqruAURnGgGrlNMbuVqBMoKAFw=
 			</data>
 		</dict>
 		<key>Modules/FusionCloud.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -71,7 +71,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			X3FhE5z9RzHHad4l8v9HdcIB9zvIbmaRfXr02cPlGM0=
+			Fy5nhYfBoemYtY4aU4YBC+s+6H5TDemf26PUNYzRQjU=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

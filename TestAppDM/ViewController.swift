@@ -186,14 +186,12 @@ class ViewController: UIViewController, FusionClientDelegate {
         fusionCloudConfig.applicationName = testEnvironment ? "<<DEV>>" : "<<PROD>>"
         fusionCloudConfig.softwareVersion = testEnvironment ? "<<DEV>>" : "<<PROD>>"
         fusionCloudConfig.certificationCode = testEnvironment ? "<<DEV>>" : "<<PROD>>"
-        
-        /*per pinpad*/
-        fusionCloudConfig.kekValue = testEnvironment ? "<<DEV>>" : "<<PROD>>"
-        
-        self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
-        fusionClient.fusionClientDelegate = self
-        
-        
+                
+         /*per pinpad*/
+         fusionCloudConfig.kekValue = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+                
+         self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
+         fusionClient.fusionClientDelegate = self
     }
     
     func showReceipt(doShow: Bool){
@@ -710,6 +708,15 @@ class ViewController: UIViewController, FusionClientDelegate {
             self.btnAbort.isEnabled = enableButtons
             self.btnRefund.isEnabled = enableButtons
         }
+        btnLogin.isEnabled = true
+        stopTimer()
+    }
+    func credentialsError(client: FusionClient, error: String) {
+        showReceipt(doShow: false)
+
+        txtPaymentUIDisplay.text = "LOGIN FAILED - KEK"
+        btnLogin.isEnabled = true
+    
         btnLogin.isEnabled = true
         stopTimer()
     }
