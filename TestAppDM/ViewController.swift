@@ -167,7 +167,7 @@ class ViewController: UIViewController, FusionClientDelegate {
 //    let testEnvironment = false
 //    let fusionCloudConfig = FusionCloudConfig(testEnvironmentui: false)
 
-    ///COMMENT FOR PRODUCTION
+//    ///COMMENT FOR PRODUCTION
     let testEnvironment = true
     let fusionCloudConfig = FusionCloudConfig(testEnvironmentui: true)
     
@@ -181,7 +181,7 @@ class ViewController: UIViewController, FusionClientDelegate {
         ///TO BE PROVIDED BY DATAMESH
         fusionCloudConfig.saleID = testEnvironment ? "<<SALE ID - DEV>>"  : "<<SALE ID - PROD>>"
         fusionCloudConfig.poiID = testEnvironment ? "<<POI ID - DEV>>" : "<<POI ID - PROD>>"
-        
+                
         fusionCloudConfig.providerIdentification = testEnvironment ? "<<DEV>>" : "<<PROD>>"
         fusionCloudConfig.applicationName = testEnvironment ? "<<DEV>>" : "<<PROD>>"
         fusionCloudConfig.softwareVersion = testEnvironment ? "<<DEV>>" : "<<PROD>>"
@@ -317,7 +317,7 @@ class ViewController: UIViewController, FusionClientDelegate {
                 
         let loginRequest = LoginRequest()
             loginRequest.dateTime = Date()
-            loginRequest.operatorID = "sfsuper"
+//            loginRequest.operatorID = "sfsuper"
             loginRequest.operatorLanguage = "en"
             
         let saleSoftware = SaleSoftware()
@@ -378,7 +378,7 @@ class ViewController: UIViewController, FusionClientDelegate {
         fusionClient.messageHeader?.messageCategory = "Payment"
         var productCode = txtProductCode.text
         if (productCode?.trimmingCharacters(in: .whitespacesAndNewlines) == "") {
-            productCode = "productCode"
+            productCode = "productC(test) od - ne"
         }
         
         let paymentRequest = PaymentRequest()
@@ -399,8 +399,9 @@ class ViewController: UIViewController, FusionClientDelegate {
                     saleItem1.productCode = productCode
                     saleItem1.unitOfMeasure = "Unit"
                     saleItem1.quantity = 1
-                    saleItem1.unitPrice = 42.50
-                    saleItem1.productLabel = "NVIDIA GEFORCE RTX 3090"
+                    saleItem1.unitPrice = 4200
+                    saleItem1.itemAmount = 4200
+                    saleItem1.productLabel = "test / zero dC(test) od - $ Â ne"
         
                 paymentTransaction.amountsReq = amountsReq
                 paymentTransaction.saleItem = [saleItem1]
