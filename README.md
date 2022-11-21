@@ -49,7 +49,7 @@ Build FusionCloud library
 
 Open ViewController and edit the fusionCloudConfig with the values provided to you by DataMesh.
 
-Build & run the app
+Build & run the app on a simulator
 
 ```
 fusionCloudConfig = FusionCloudConfig()
