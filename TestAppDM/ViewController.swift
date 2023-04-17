@@ -177,22 +177,40 @@ class ViewController: UIViewController, FusionClientDelegate {
     var logs: String = ""
     
     public func initConfig() {
-        fusionCloudConfig.allowSelfSigned = true
-        ///TO BE PROVIDED BY DATAMESH
-        fusionCloudConfig.saleID = testEnvironment ? "<<SALE ID - DEV>>"  : "<<SALE ID - PROD>>"
-        fusionCloudConfig.poiID = testEnvironment ? "<<POI ID - DEV>>" : "<<POI ID - PROD>>"
-                
-        fusionCloudConfig.providerIdentification = testEnvironment ? "<<DEV>>" : "<<PROD>>"
-        fusionCloudConfig.applicationName = testEnvironment ? "<<DEV>>" : "<<PROD>>"
-        fusionCloudConfig.softwareVersion = testEnvironment ? "<<DEV>>" : "<<PROD>>"
-        fusionCloudConfig.certificationCode = testEnvironment ? "<<DEV>>" : "<<PROD>>"
-                
-         /*per pinpad*/
-         fusionCloudConfig.kekValue = testEnvironment ? "<<DEV>>" : "<<PROD>>"
-                
-         self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
-         fusionClient.fusionClientDelegate = self
-    }
+           fusionCloudConfig.allowSelfSigned = true
+           ///TO BE PROVIDED BY DATAMESH
+           fusionCloudConfig.saleID = testEnvironment ? "VA POS"  : "<<SALE ID - PROD>>"
+           fusionCloudConfig.poiID = testEnvironment ? "DMGVA002" : "<<POI ID - PROD>>"
+                   
+           fusionCloudConfig.providerIdentification = testEnvironment ? "Company A" : "<<PROD>>"
+           fusionCloudConfig.applicationName = testEnvironment ? "POS Retail" : "<<PROD>>"
+           fusionCloudConfig.softwareVersion = testEnvironment ? "01.00.00" : "<<PROD>>"
+           fusionCloudConfig.certificationCode = testEnvironment ? "98cf9dfc-0db7-4a92-8b8cb66d4d2d7169" : "<<PROD>>"
+                   
+            /*per pinpad*/
+            fusionCloudConfig.kekValue = testEnvironment ? "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21" : "<<PROD>>"
+                   
+            self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
+            fusionClient.fusionClientDelegate = self
+       }
+
+//    public func initConfig() {
+//        fusionCloudConfig.allowSelfSigned = true
+//        ///TO BE PROVIDED BY DATAMESH
+//        fusionCloudConfig.saleID = testEnvironment ? "<<SALE ID - DEV>>"  : "<<SALE ID - PROD>>"
+//        fusionCloudConfig.poiID = testEnvironment ? "<<POI ID - DEV>>" : "<<POI ID - PROD>>"
+//
+//        fusionCloudConfig.providerIdentification = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+//        fusionCloudConfig.applicationName = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+//        fusionCloudConfig.softwareVersion = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+//        fusionCloudConfig.certificationCode = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+//
+//         /*per pinpad*/
+//         fusionCloudConfig.kekValue = testEnvironment ? "<<DEV>>" : "<<PROD>>"
+//
+//         self.fusionClient = FusionClient(fusionCloudConfig: fusionCloudConfig)
+//         fusionClient.fusionClientDelegate = self
+//    }
     
     func showReceipt(doShow: Bool){
         vwLoading.isHidden = doShow
@@ -259,7 +277,7 @@ class ViewController: UIViewController, FusionClientDelegate {
         clearResults()
         let requestedAmount = NSDecimalNumber(string: txtRequestedAmount.text)
         let tipAmount = NSDecimalNumber(string: txtTipAmount.text)
-        self.doPayment(paymentType: "Normal", requestedAmount: requestedAmount, tipAmount: tipAmount)
+        self.doPayment(paymentType: .Normal, requestedAmount: requestedAmount, tipAmount: tipAmount)
     }
     
     @IBAction func btnDoRefund(_ sender: UIButton) {
@@ -268,7 +286,7 @@ class ViewController: UIViewController, FusionClientDelegate {
         let requestedAmount = NSDecimalNumber(string: txtRequestedAmount.text)
         let tipAmount = NSDecimalNumber(string: txtResultTipAmount.text)
         clearResults()
-        self.doPayment(paymentType: "Refund", requestedAmount: requestedAmount, tipAmount: tipAmount)
+        self.doPayment(paymentType: .Refund, requestedAmount: requestedAmount, tipAmount: tipAmount)
         
     }
     
@@ -287,7 +305,7 @@ class ViewController: UIViewController, FusionClientDelegate {
             //btnAbort.isHidden=true //still showing
             
             currentTransactionServiceID = UUID().uuidString
-            fusionClient.messageHeader?.messageCategory = "TransactionStatus"
+            fusionClient.messageHeader?.messageCategory = .TransactionStatus
             fusionClient.messageHeader?.serviceID =  currentTransactionServiceID
             
             let transactionStatusRequest = TransactionStatusRequest()
@@ -295,7 +313,7 @@ class ViewController: UIViewController, FusionClientDelegate {
             messageReference.serviceID = currentPaymentServiceId
             messageReference.saleID = fusionCloudConfig.saleID
             messageReference.poiID = fusionCloudConfig.poiID
-            messageReference.messageCategory = "Payment"
+            messageReference.messageCategory = .Payment
             
             transactionStatusRequest.messageReference = messageReference
             
@@ -313,7 +331,7 @@ class ViewController: UIViewController, FusionClientDelegate {
         dateFormat.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
             
         fusionClient.messageHeader?.serviceID = currentTransactionServiceID
-        fusionClient.messageHeader?.messageCategory = "Login"
+        fusionClient.messageHeader?.messageCategory = .Login
                 
         let loginRequest = LoginRequest()
             loginRequest.dateTime = Date()
@@ -322,13 +340,17 @@ class ViewController: UIViewController, FusionClientDelegate {
             
         let saleSoftware = SaleSoftware()
             saleSoftware.providerIdentification = fusionCloudConfig.providerIdentification
-            saleSoftware.ApplicationName = fusionCloudConfig.applicationName
+            saleSoftware.applicationName = fusionCloudConfig.applicationName
             saleSoftware.softwareVersion = fusionCloudConfig.softwareVersion
             saleSoftware.certificationCode = fusionCloudConfig .certificationCode
                 
         let saleTerminalData = SaleTerminalData()
-            saleTerminalData.terminalEnvironment = "Attended"
-            saleTerminalData.saleCapabilities = ["CashierStatus","CashierError","CashierInput","CustomerAssistance","PrinterReceipt"]
+        saleTerminalData.terminalEnvironment = .Attended
+        saleTerminalData.saleCapabilities = [SaleCapability.CashierStatus,
+                                             SaleCapability.CashierError,
+                                             SaleCapability.CashierInput,
+                                             SaleCapability.CustomerAssistance,
+                                             SaleCapability.PrinterReceipt]
                 
         loginRequest.saleTerminalData = saleTerminalData
         loginRequest.saleSoftware = saleSoftware
@@ -340,12 +362,12 @@ class ViewController: UIViewController, FusionClientDelegate {
     }
     
     func doAbort(abortReason: String) {
-        fusionClient.messageHeader?.messageCategory = "Abort"
+        fusionClient.messageHeader?.messageCategory = .Abort
         fusionClient.messageHeader?.serviceID = UUID().uuidString
         
         let abortRequest = AbortRequest()
         let messageReference = MessageReference()
-            messageReference.messageCategory = "Payment"
+        messageReference.messageCategory = .Payment
             messageReference.serviceID = currentPaymentServiceId
             messageReference.saleID = fusionCloudConfig.saleID
             messageReference.poiID = fusionCloudConfig.poiID
@@ -357,7 +379,7 @@ class ViewController: UIViewController, FusionClientDelegate {
         fusionClient.sendMessage(requestBody: abortRequest, type: "AbortRequest")
     }
     
-    func doPayment(paymentType: String, requestedAmount: NSDecimalNumber, tipAmount: NSDecimalNumber){
+    func doPayment(paymentType: PaymentType, requestedAmount: NSDecimalNumber, tipAmount: NSDecimalNumber){
         
         // Set default dialog
         txtPaymentResult.backgroundColor = UIColor.systemBackground
@@ -375,7 +397,7 @@ class ViewController: UIViewController, FusionClientDelegate {
         currentPaymentServiceId = UUID().uuidString
         currentTransactionServiceID = currentPaymentServiceId
         fusionClient.messageHeader?.serviceID = currentPaymentServiceId
-        fusionClient.messageHeader?.messageCategory = "Payment"
+        fusionClient.messageHeader?.messageCategory = .Payment
         var productCode = txtProductCode.text
         if (productCode?.trimmingCharacters(in: .whitespacesAndNewlines) == "") {
             productCode = "productC(test) od - ne"
@@ -444,8 +466,8 @@ class ViewController: UIViewController, FusionClientDelegate {
         let success = paymentResponse.response?.isSuccess() == true;
         let cardAccount = paymentResult?.paymentInstrumentData?.cardData?.getAccount()
         let paymentBrand = cardData?.getPaymentBrand()
-        let entryMode = cardData?.entryMode ?? "not specified"
-        let paymentInstrumentType = paymentResult?.paymentInstrumentData?.paymentInstrumentType ?? "not specified"
+        let entryMode = cardData?.entryMode ?? .Unknown
+        let paymentInstrumentType = paymentResult?.paymentInstrumentData?.paymentInstrumentType ?? .Unspecified
         let transactionId = paymentResult?.paymentAcquirerData?.acquirerTransactionID?.transactionID ?? "not specified"
         let approvalCode = paymentResult?.paymentAcquirerData?.approvalCode ?? "not specified"
         
@@ -464,19 +486,19 @@ class ViewController: UIViewController, FusionClientDelegate {
             txtPaymentUIDisplay.text = ""
             
         }
-        else if(paymentResponse.response?.errorCondition=="Cancel"){
+        else if(paymentResponse.response?.errorCondition == .Cancel){
             txtPaymentResult.backgroundColor = UIColor.systemYellow;
             txtPaymentResult.textColor = UIColor.white;
             txtPaymentResult.text = "PAYMENT CANCELLED"
             txtPaymentUIDisplay.text=""
-            txtErrorCondition.text = paymentResponse.response?.errorCondition
+            txtErrorCondition.text = paymentResponse.response?.errorCondition?.rawValue
         }
         else {
             txtPaymentResult.backgroundColor = UIColor.systemRed;
             txtPaymentResult.textColor = UIColor.white;
             txtPaymentResult.text = "PAYMENT FAILED"
             txtPaymentUIDisplay.text=""
-            txtErrorCondition.text = paymentResponse.response?.errorCondition
+            txtErrorCondition.text = paymentResponse.response?.errorCondition?.rawValue
         }
         
         txtResultAuthorizedAmount.text = numberFormatter.string(from: authorizedAmount);
@@ -485,8 +507,8 @@ class ViewController: UIViewController, FusionClientDelegate {
         txtResultMaskedPAN.text = maskedPAN;
         txtCardAccount.text = cardAccount
         txtPaymentBrand.text = paymentBrand
-        txtEntryMode.text = entryMode
-        txtPaymentType.text = paymentInstrumentType
+        txtEntryMode.text = entryMode.rawValue
+        txtPaymentType.text = paymentInstrumentType.rawValue
         txtTransactionID.text = transactionId
         txtApprovalCode.text = approvalCode
         
@@ -534,8 +556,8 @@ class ViewController: UIViewController, FusionClientDelegate {
         let maskedPAN = pResponse?.paymentResult?.paymentInstrumentData?.cardData?.maskedPan ?? "";
         let cardAccount = cardData?.getAccount()
         let paymentBrand = cardData?.getPaymentBrand()
-        let entryMode = cardData?.entryMode ?? "not specified"
-        let paymentInstrumentType = pResult?.paymentInstrumentData?.paymentInstrumentType ?? "not specified"
+        let entryMode = cardData?.entryMode ?? .Unknown
+        let paymentInstrumentType = pResult?.paymentInstrumentData?.paymentInstrumentType ?? .Unspecified
         let transactionId = pResult?.paymentAcquirerData?.acquirerTransactionID?.transactionID ?? "not specified"
         let approvalCode = pResult?.paymentAcquirerData?.approvalCode ?? "not specified"
         let receiptHTML = pResponse?.paymentReceipt?[0].getReceiptAsPlainText()!
@@ -547,8 +569,8 @@ class ViewController: UIViewController, FusionClientDelegate {
         txtResultMaskedPAN.text = maskedPAN;
         txtCardAccount.text = cardAccount
         txtPaymentBrand.text = paymentBrand
-        txtEntryMode.text = entryMode
-        txtPaymentType.text = paymentInstrumentType
+        txtEntryMode.text = entryMode.rawValue
+        txtPaymentType.text = paymentInstrumentType.rawValue
         txtTransactionID.text = transactionId
         txtApprovalCode.text = approvalCode
         
@@ -579,12 +601,12 @@ class ViewController: UIViewController, FusionClientDelegate {
         }
         else {
             
-            if(errorCondition=="InProgress" && secondsRemaining>0){
+            if(errorCondition == .InProgress && secondsRemaining>0){
                 showReceipt(doShow: false)
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
                     self.doTransactionStatus()
                 }
-            } else if(errorCondition=="Cancel"){
+            } else if(errorCondition == .Cancel){
                 showReceipt(doShow: true)
                 txtPaymentResult.backgroundColor = UIColor.systemYellow;
                 txtPaymentResult.textColor = UIColor.white;
@@ -603,7 +625,7 @@ class ViewController: UIViewController, FusionClientDelegate {
                 txtPaymentResult.textColor = UIColor.white;
                 txtPaymentResult.text = "PAYMENT FAILED"
                 txtPaymentUIDisplay.text=""
-                txtErrorCondition.text = transactionStatusResponse.response!.errorCondition
+                txtErrorCondition.text = transactionStatusResponse.response!.errorCondition?.rawValue
                 stopTimer()
                 btnAbort.isHidden=true
                 btnPurchase.isEnabled=true
@@ -697,7 +719,7 @@ class ViewController: UIViewController, FusionClientDelegate {
             inLogin=true
             return
         }
-        if (loginResponse.response?.result != "Success") {
+        if (loginResponse.response?.result != .Success) {
             enableButtons = false
             print("Login Error!")
             txtPaymentUIDisplay.text = "LOGIN FAILED"
